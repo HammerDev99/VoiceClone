@@ -14,15 +14,13 @@ from voiceclone.domain.models import VoiceTuning
 # Preset por defecto: tono pausado y afectuoso, apropiado para un memorial.
 DEFAULT_PRESET = "calido_sereno"
 
+# Solo los presets que conservan la realidad de la voz de Alexander (validados a
+# oido). Los descartados (estable/expresivo) perdian fidelidad del timbre.
 PRESETS: dict[str, VoiceTuning] = {
-    # Balance recomendado por ElevenLabs: natural y consistente.
-    "natural": VoiceTuning(stability=0.50, similarity_boost=0.75, style=0.0, speed=1.0),
-    # Muy consistente y sereno; menos variacion emocional.
-    "estable": VoiceTuning(stability=0.75, similarity_boost=0.80, style=0.0, speed=0.95),
     # Calido, pausado y cercano: pensado para el memorial (por defecto).
     "calido_sereno": VoiceTuning(stability=0.65, similarity_boost=0.85, style=0.10, speed=0.92),
-    # Mas emocion y matices, a costa de algo de consistencia.
-    "expresivo": VoiceTuning(stability=0.35, similarity_boost=0.80, style=0.30, speed=1.0),
+    # Balance recomendado por ElevenLabs: natural y consistente.
+    "natural": VoiceTuning(stability=0.50, similarity_boost=0.75, style=0.0, speed=1.0),
 }
 
 

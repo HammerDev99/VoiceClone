@@ -84,10 +84,10 @@ def test_resolve_tuning_explicito_gana(make_settings: Callable[..., Settings]) -
 
 
 def test_resolve_tuning_usa_preset_por_defecto(make_settings: Callable[..., Settings]) -> None:
-    settings = make_settings(voice_preset="estable")
+    settings = make_settings(voice_preset="natural")
     tuning = ss._resolve_tuning(settings, None)
     assert isinstance(tuning, VoiceTuning)
-    assert tuning.stability == 0.75
+    assert tuning.stability == 0.50
 
 
 def test_resolve_tuning_preset_invalido_devuelve_none(

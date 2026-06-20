@@ -23,7 +23,7 @@ def test_default_preset_existe() -> None:
 def test_preset_names_ordenados_y_completos() -> None:
     nombres = preset_names()
     assert nombres == sorted(PRESETS)
-    assert set(nombres) == {"natural", "estable", "calido_sereno", "expresivo"}
+    assert set(nombres) == {"natural", "calido_sereno"}
 
 
 def test_get_preset_valido() -> None:
