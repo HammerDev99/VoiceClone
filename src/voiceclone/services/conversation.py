@@ -8,9 +8,10 @@ mantiene la simetria con el servicio de voz y facilita el testeo.
 from __future__ import annotations
 
 from anthropic.types import MessageParam
-from returns.result import Failure, Result
+from returns.result import Failure, Result, Success
 
 from voiceclone.config.settings import Settings
+from voiceclone.domain import safety
 from voiceclone.domain.models import ConversationTurn
 from voiceclone.domain.persona import Persona
 from voiceclone.infrastructure import anthropic_client as ac
@@ -51,6 +52,14 @@ def generate_reply(
     clean = user_message.strip()
     if not clean:
         return Failure("El mensaje del usuario esta vacio.")
+
+    # Backstop de seguridad (independiente del LLM): ante una senal de crisis se
+    # devuelve un recurso fijo y verificado SIN invocar a Claude. Se registra que
+    # se detecto la senal, nunca el contenido del mensaje (privacidad y dignidad).
+    if safety.detect_crisis_signal(clean):
+        logger.warning("Senal de crisis detectada; se omite la llamada a Claude.")
+        return Success(safety.CRISIS_RESPONSE)
+
     if not settings.has_anthropic:
         return Failure("Falta ANTHROPIC_API_KEY en .env. Es necesaria para la conversacion.")
 
