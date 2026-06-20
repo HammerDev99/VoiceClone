@@ -18,6 +18,17 @@ def test_app_arranca_y_muestra_titulo() -> None:
     assert any("Alexander" in title.value for title in at.title)
 
 
+def test_analytics_con_secreto_no_rompe_la_app() -> None:
+    at = AppTest.from_file(APP_PATH)
+    at.secrets["ANALYTICS_SCRIPT"] = (
+        '<script defer src="https://analytics.example.com/script.js" '
+        'data-website-id="test-id-123"></script>'
+    )
+    at.run(timeout=60)
+    # La inyección de analítica ocurre antes de validar config; nunca debe romper.
+    assert not at.exception
+
+
 def test_consent_gate_oculta_el_chat_hasta_aceptar(monkeypatch: pytest.MonkeyPatch) -> None:
     # Claves de prueba para que _check_ready pase de forma determinista (sin red).
     for clave, valor in {

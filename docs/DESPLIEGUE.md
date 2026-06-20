@@ -55,7 +55,16 @@ ANTHROPIC_API_KEY = "sk-ant-..."
 VOICE_ID = "YGZ9Wy0OURezjISirtC4"
 VOICE_PRESET = "calido_sereno"
 # (resto de claves de la plantilla)
+
+# Opcional — analítica web (Umami): pega el snippet completo de tu panel.
+ANALYTICS_SCRIPT = '<script defer src="https://analytics.sprintjudicial.com/script.js" data-website-id="747d8b89-4c3d-4b25-9b79-e538bd831bce"></script>'
 ```
+
+> **Analítica (Umami)**: es opcional y solo se activa en la nube. La app lee el
+> secreto `ANALYTICS_SCRIPT` y, si está presente, inyecta el `<script>` una sola
+> vez en el `<head>` (extrae `src` y `data-website-id` del snippet). En local no
+> hace falta; si el secreto no está, la analítica queda desactivada. Solo registra
+> páginas vistas en Umami: **no** envía el contenido de las conversaciones.
 
 ### 4. Desplegar
 

@@ -17,12 +17,14 @@ texto y se reproduce con su voz clonada.
 from __future__ import annotations
 
 import os
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent / "src"))
 
 import streamlit as st
+import streamlit.components.v1 as components
 from returns.result import Failure, Success
 
 from voiceclone.config.settings import Settings, load_settings
@@ -40,6 +42,10 @@ PRESET_LABELS = {
     "calido_sereno": "Cálido y sereno",
     "natural": "Natural",
 }
+
+# Secreto opcional con el snippet completo de analítica (Umami). Solo se usa en el
+# despliegue: se define en Streamlit Cloud -> Settings -> Secrets. En local no hace falta.
+ANALYTICS_SECRET_KEY = "ANALYTICS_SCRIPT"
 
 # Claves que la app necesita; en la nube llegan por st.secrets, en local por .env.
 _ENV_KEYS = (
@@ -69,6 +75,42 @@ def _bridge_secrets_to_env() -> None:
     for key in _ENV_KEYS:
         if key not in os.environ and key in available:
             os.environ[key] = str(available[key])
+
+
+def _inject_analytics() -> None:
+    """Inyecta el script de analítica (Umami) en el documento padre, una sola vez.
+
+    Lee el snippet completo desde ``st.secrets[ANALYTICS_SCRIPT]`` (definido solo en
+    la nube) y extrae el ``src`` y el ``data-website-id`` para crear el ``<script>``
+    en el ``<head>`` del documento padre, evitando duplicados. Es opcional: si no hay
+    secreto configurado (p. ej. en local), se omite en silencio. No registra nada
+    sensible y no recoge datos de los mensajes (solo páginas vistas vía Umami).
+    """
+    try:
+        snippet = str(st.secrets.get(ANALYTICS_SECRET_KEY, ""))
+    except Exception:  # no hay secrets.toml (ejecución local): analítica desactivada
+        return
+    if not snippet:
+        return
+
+    src_match = re.search(r'src="([^"]+)"', snippet)
+    id_match = re.search(r'data-website-id="([^"]+)"', snippet)
+    if not src_match or not id_match:
+        return
+    src, website_id = src_match.group(1), id_match.group(1)
+
+    script = f"""
+    <script>
+        if (!parent.document.querySelector('script[data-website-id="{website_id}"]')) {{
+            var s = parent.document.createElement('script');
+            s.defer = true;
+            s.src = '{src}';
+            s.setAttribute('data-website-id', '{website_id}');
+            parent.document.head.appendChild(s);
+        }}
+    </script>
+    """
+    components.html(script, height=0)
 
 
 @st.cache_resource(show_spinner=False)
@@ -185,6 +227,7 @@ def _select_voice(settings: Settings) -> VoiceTuning | None:
 def main() -> None:
     _render_header()
     _bridge_secrets_to_env()
+    _inject_analytics()
 
     settings, client, error = _load_resources()
     if error or settings is None:
