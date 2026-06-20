@@ -26,15 +26,17 @@ para detalle, navega a `agent_docs/` (Nivel 2) y `docs/` (Nivel 3).
 ```
 src/voiceclone/
   config/         settings.py        (carga y valida .env)
-  infrastructure/ logging.py, elevenlabs_client.py
-  domain/         models.py (DTOs frozen), persona.py (personalidad Alexander)
+  infrastructure/ logging.py, elevenlabs_client.py, anthropic_client.py
+  domain/         models.py (DTOs frozen), persona.py, voice_presets.py
   services/       voice_cloning.py, speech_synthesis.py, conversation.py
-  cli/            main.py
-scripts/          01_verificar_conexion .. 04_conversar  (entrypoints ejecutables)
+  cli/            main.py, console.py
+streamlit_app.py  interfaz web para la familia (entrypoint de Streamlit Cloud)
+.streamlit/       config.toml (tema) + secrets.toml.example
+scripts/          01_verificar .. 06_app_familia  (entrypoints ejecutables)
 audios/           muestras .m4a de entrada (PRIVADAS, gitignored)
-output/           audio generado (gitignored)
+output/           audio generado + calibracion/ (gitignored)
 tests/            unit + PBT
-docs/             plannings/ sprints/ validate/ templates/ prompts/ diagrams/
+docs/             plannings/ sprints/ validate/ templates/ DESPLIEGUE.md ...
 agent_docs/       documentacion Nivel 2
 ```
 
@@ -54,8 +56,12 @@ cp .env.example .env                     # luego edita .env con tus API keys
 python scripts/01_verificar_conexion.py  # comprueba API keys y cuenta
 python scripts/02_clonar_voz.py          # crea la voz "Alexander" desde audios/
 python scripts/03_generar_voz.py "texto" # TTS con la voz clonada -> output/
-python scripts/04_conversar.py           # conversa con la persona (Claude + voz)
+python scripts/05_calibrar_voz.py "..."  # compara presets de voz -> output/calibracion/
+python scripts/04_conversar.py           # conversa en terminal (Claude + voz)
+python scripts/06_app_familia.py         # interfaz web para la familia (Streamlit)
 ```
+
+Despliegue web (Streamlit Community Cloud): ver `docs/DESPLIEGUE.md`.
 
 ## Divulgacion Progresiva (donde buscar)
 
@@ -70,6 +76,7 @@ python scripts/04_conversar.py           # conversa con la persona (Claude + voz
 | Que NO hacer | `agent_docs/antipatterns.md` |
 | Resolver problemas comunes | `agent_docs/troubleshooting.md` |
 | Estado actual del proyecto | `agent_docs/project_status.md` |
+| Desplegar la app web (familia) | `docs/DESPLIEGUE.md` |
 | Planning / sprints / auditorias | `docs/plannings/`, `docs/sprints/`, `docs/validate/` |
 
 ## Reglas Criticas (6)
@@ -86,14 +93,17 @@ python scripts/04_conversar.py           # conversa con la persona (Claude + voz
 ## Estado Actual
 
 ```
-Sprint 01 (clonado IVC + TTS + persona): [██████████████████░░] andamiaje listo
+Sprint 01 (clonado IVC + TTS + persona):  [████████████████████] ✅ Gate F1
+Sprint 02 (calidad de voz + UI familia):  [████████████████████] ✅ Gate F2
+Despliegue Streamlit Cloud:               [████████░░░░░░░░░░░░] pendiente
 ```
 
 | Metrica | Valor |
 |---------|-------|
-| Fase CDAID | Do (Sprint 01) |
-| Tests | ver `agent_docs/project_status.md` |
-| Voz clonada | pendiente (requiere API key + audios) |
+| Fase CDAID | Check completado (F1, F2 aprobados) |
+| Tests | 69 (ruff 0, mypy 0) — ver `agent_docs/project_status.md` |
+| Voz clonada | `VOICE_ID=A1w42DVwDu80oNyR6BeL` (5 muestras) |
+| Preset por defecto | `calido_sereno` (alt: `natural`) |
 
 ## Compact Instructions
 

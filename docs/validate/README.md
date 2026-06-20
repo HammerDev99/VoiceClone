@@ -15,6 +15,7 @@ SLUG: GATE_F{N}_{FASE} | REAUDIT_F{N} | QA_FINAL | SECURITY_SCAN
 | # | Fecha | Alcance | Veredicto | Tasa SDD |
 |---|-------|---------|-----------|:--------:|
 | 01 | 2026-06-20 | Gate F1 — Núcleo (config, dominio, infra, servicios, CLI) | ✅ APROBADO | 100% |
+| 02 | 2026-06-20 | Gate F2 — Calidad de voz (presets) + interfaz Streamlit + despliegue | ✅ APROBADO | 100% |
 
 ## Instrumentos de verificación usados
 
