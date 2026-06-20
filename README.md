@@ -29,6 +29,7 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 - [Metodología (CDAID v2)](#metodología-cdaid-v2)
 - [Calidad y tests](#calidad-y-tests)
 - [Roadmap](#roadmap)
+- [Datos de ingeniería agéntica](#datos-de-ingeniería-agéntica-agentic-engineering)
 
 ---
 
@@ -159,6 +160,70 @@ mypy src
   Ver consideraciones en `agent_docs/project_status.md` (sección Roadmap).
 - Streaming token a token en la UI; gestión de voces; control de acceso por lista
   blanca de números para el canal de mensajería.
+
+## Datos de ingeniería agéntica (agentic engineering)
+
+> Meta-observabilidad del propio proceso de construcción asistido por IA. Sirve
+> como referencia para desarrollar soluciones con *agentic engineering*.
+> Datos al 2026-06-20 (Gates F1 y F2). Regenerables (ver final de sección).
+
+**Modelo y entorno**
+
+| Dato | Valor |
+|------|-------|
+| Modelo | **Claude Opus 4.8** (`claude-opus-4-8`) |
+| Entorno | Claude Code (CLI) · Windows 11 · Python 3.14 |
+| Metodología | CDAID v2 (Plan → Do → Check → Act) |
+
+**Producto construido**
+
+| Métrica | Valor |
+|---------|:-----:|
+| Commits | 7 (3 `feat`, 2 `docs`, 1 `refactor`, 1 `chore`) |
+| Archivos versionados | 73 |
+| Código fuente (`src/`) | 18 módulos · ~1.101 LOC |
+| Tests | 12 archivos · ~677 LOC · **69 tests** |
+| Scripts / Docs | 6 scripts · 28 `.md` (~1.605 LOC) |
+| Dependencias runtime | 5 |
+| Gates CDAID aprobados | F1, F2 (F3 planificado) |
+
+**Proceso agéntico**
+
+| Instrumento | Uso en la sesión |
+|-------------|------------------|
+| Skills | `sdd-framework-v2`, `refactoring`, `design-patterns`, `streamlit` |
+| Docs en vivo (Context7) | SDK de ElevenLabs (3 consultas) — evitó errores de API |
+| Decisiones humanas | 2 rondas de preguntas (tipo de clonado/alcance; canal WhatsApp) |
+| Sub-agentes (Task) | 0 — ejecución inline |
+| Verificación por etapa | `ruff` + `mypy --strict` + `pytest` + auditoría multi-instrumento |
+| Pruebas contra API real | ElevenLabs (cuenta, IVC, TTS) y Anthropic (conversación) |
+
+**Consumo de la sesión** _(completar desde Claude Code con `/cost`)_
+
+| Dato | Valor |
+|------|-------|
+| Tokens totales (in/out) | _ejecutar `/cost`_ |
+| Coste estimado | _ejecutar `/cost`_ |
+| Duración de la sesión | _ver panel de Claude Code_ |
+
+**Aprendizajes (agentic engineering)**
+
+- **Skills como instrumentos de verificación**: `/refactoring` y `/design-patterns`
+  detectaron y corrigieron deuda real (encapsular Anthropic, eliminar duplicación).
+- **Verificar contra la realidad**: la prueba con la API real reveló que el SDK
+  v2.53 usa `user.subscription.get()` (no `user.info()`); la doc por sí sola no bastó.
+- **Decisiones del humano explícitas**: las elecciones de producto se capturaron con
+  preguntas (trazas de delegación), no se asumieron.
+- **Commits por partes**: historial trazable, cada commit compila y pasa el gate.
+
+**Regenerar las métricas del producto**
+
+```bash
+git log --oneline | wc -l                                   # commits
+find src -name '*.py' | wc -l                               # módulos
+find src -name '*.py' -exec cat {} + | wc -l                # LOC de src
+pytest -q                                                    # nº de tests
+```
 
 ---
 
