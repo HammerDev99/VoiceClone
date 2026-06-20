@@ -7,13 +7,14 @@
 ```
 F1 Núcleo (clonado·TTS·conversación):           [████████████████████] 100% ✅ APROBADO
 F2 Calidad de voz + interfaz familia:           [████████████████████] 100% ✅ APROBADO
-Despliegue en Streamlit Cloud:                  [████████░░░░░░░░░░░░] pendiente del usuario
+Despliegue en Streamlit Cloud:                  [████████████████████] 100% ✅ DESPLEGADO
+F3 Canal WhatsApp (Twilio):                     [░░░░░░░░░░░░░░░░░░░░] roadmap (no iniciado)
 ```
 
 ## Fase CDAID actual
 
-**Gate F2 aprobado** (`docs/validate/AUDIT_02`). Voz mejorada y app lista para la
-familia. Falta el despliegue efectivo en Streamlit Community Cloud.
+**Gates F1 y F2 aprobados** y app **desplegada en Streamlit Community Cloud con
+éxito**. Próximo foco propuesto: canal de WhatsApp (ver Roadmap).
 
 ## Hecho
 
@@ -22,21 +23,41 @@ familia. Falta el despliegue efectivo en Streamlit Community Cloud.
 - [x] Voz re-clonada con 5 muestras: `VOICE_ID=A1w42DVwDu80oNyR6BeL`.
 - [x] Presets validados a oído: `calido_sereno` (defecto) y `natural`.
 - [x] App Streamlit (`streamlit_app.py`) con chat + voz + historial.
-- [x] 69 tests, ruff 0, mypy 0.
-- [x] Auditorías F1 y F2 aprobadas (tasa SDD 100%).
+- [x] **Selector de tono de voz** en la barra lateral de la app.
+- [x] **Desplegada en Streamlit Community Cloud** (2026-06-20).
+- [x] 69 tests, ruff 0, mypy 0. Auditorías F1 y F2 aprobadas (tasa SDD 100%).
 
 ## Pendiente del usuario
 
-- [ ] Elegir/confirmar preset final en `.env` (`VOICE_PRESET`).
-- [ ] Desplegar en Streamlit Community Cloud (ver `docs/DESPLIEGUE.md`):
-      subir a GitHub, crear app, configurar secrets.
 - [ ] Rotar las API keys de ElevenLabs y Anthropic (compartidas en el chat).
 - [ ] (Opcional) Borrar de la cuenta ElevenLabs las voces antiguas (3 muestras).
+
+## Roadmap — Canal de WhatsApp (dirección elegida: Twilio)
+
+Objetivo: que la familia converse con Alexander por WhatsApp y reciba **notas de
+voz**. Decisión tomada: **empezar con Twilio (sandbox)** por su rapidez de
+arranque; migrable a Meta Cloud API más adelante.
+
+**Arquitectura prevista** (el núcleo `voiceclone` se reutiliza tal cual):
+```
+WhatsApp → webhook (FastAPI) → conversation (Claude+persona) → speech_synthesis → nota de voz
+```
+- Requiere un **backend con webhook público** (Render/Railway/Fly.io); Streamlit
+  no sirve para webhooks.
+- Audio: nota de voz `ogg/opus` (o `mp3` adjunto).
+- **Control de acceso**: lista blanca de números de la familia (privacidad).
+- Costo: por conversación/mensaje (a estimar).
+- Datos de conexión del sandbox (número de la familia, comando `join <sandbox>`,
+  membresía de 72 h) se guardan **fuera del repo** (memoria/.env), por privacidad.
+
+> ⏸️ Hay un planning formal pendiente del usuario sobre **"Ethical Concerns in
+> Digital Afterlife Industry"** que precederá/condicionará esta fase. No iniciar
+> la implementación de WhatsApp hasta recibir ese planning.
 
 ## Backlog (diferido)
 
 - Streaming token a token en la UI (`st.write_stream`).
-- Reproducción/descarga avanzada; gestión de voces (borrar/editar).
+- Gestión de voces (borrar/editar); reproducción/descarga avanzada.
 - Tests `@pytest.mark.integration` contra APIs reales.
 
 ## Métricas

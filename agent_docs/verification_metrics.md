@@ -2,16 +2,17 @@
 
 > Nivel 2. Métrico.
 
-## Métricas del proyecto (Gate F1, 2026-06-20)
+## Métricas del proyecto (Gates F1 + F2, 2026-06-20)
 
 | Métrica | Valor | Meta |
 |---------|:-----:|:----:|
-| Tests | 55 | — |
-| Cobertura | 95% | ≥80% |
+| Tests | 69 | — |
+| Cobertura (núcleo) | ~95% | ≥80% |
 | ruff | 0 | 0 |
 | mypy --strict | 0 | 0 |
 | Tasa SDD (8 puntos) | 100% | ≥85% |
 | Hallazgos CRITICAL/HIGH abiertos | 0 | 0 |
+| Gates aprobados | F1, F2 | — |
 
 ## Métricas de verificación CDAID
 

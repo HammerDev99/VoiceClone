@@ -43,3 +43,21 @@ Revisa el uso con `scripts/01_verificar_conexion.py`. El plan starter da
 ## Cuota / errores 401 / 429
 - 401: API key inválida → revisa `.env`.
 - 429: límite de tasa → reintenta más tarde.
+
+## La app Streamlit no arranca
+- Local: `streamlit run streamlit_app.py` (o `python scripts/06_app_familia.py`)
+  desde la raíz del proyecto con el venv activo.
+- Si muestra "Falta ANTHROPIC_API_KEY" o "No hay VOICE_ID": faltan claves en
+  `.env` (local) o en *Secrets* (nube).
+
+## En Streamlit Cloud la app no encuentra las claves
+La nube no usa `.env`. Define las claves en *App → Settings → Secrets* (formato
+TOML, plantilla en `.streamlit/secrets.toml.example`). El puente
+`_bridge_secrets_to_env` de `streamlit_app.py` las vuelca a variables de entorno.
+
+## El selector de tono de voz no cambia nada
+El preset elegido en la barra lateral se aplica a la **siguiente** respuesta. Los
+presets válidos son `calido_sereno` y `natural` (ver `domain/voice_presets.py`).
+
+## Quiero cambiar el preset por defecto
+Edita `VOICE_PRESET` en `.env` (local) o en *Secrets* (nube).

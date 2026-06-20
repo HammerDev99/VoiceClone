@@ -67,4 +67,27 @@ aísla los SDK externos y devuelve siempre `Result`.
 ## Modelo de datos (DTOs, todos `frozen`)
 
 `VoiceSample`, `ClonedVoice`, `SpeechRequest`, `GeneratedSpeech`,
-`ConversationTurn`, `AccountInfo`. Ver `src/voiceclone/domain/models.py`.
+`ConversationTurn`, `AccountInfo`, `VoiceTuning`. Ver `src/voiceclone/domain/models.py`.
+
+## Canales de presentación (reutilizan `services/`)
+
+El núcleo (`domain` + `infrastructure` + `services`) es agnóstico del canal. Sobre
+él se montan distintas "caras":
+
+| Canal | Entrypoint | Estado |
+|-------|-----------|:------:|
+| **Terminal** | `cli/` + `scripts/01..06` | ✅ |
+| **Web** (familia) | `streamlit_app.py` (Streamlit) — chat + voz + selector de preset | ✅ desplegado |
+| **WhatsApp** (futuro) | backend FastAPI con webhook → reutiliza `conversation` + `speech_synthesis` | 🗺️ roadmap (Twilio) |
+
+**Principio clave**: añadir un canal nuevo (p.ej. WhatsApp) **no** toca el núcleo;
+solo se escribe un adaptador de entrada/salida que llama a los servicios existentes.
+El canal WhatsApp requerirá un servicio con **webhook público** (Streamlit no sirve
+para webhooks). Ver `agent_docs/project_status.md` → Roadmap.
+
+## Afinado de voz (calidad)
+
+`domain/voice_presets.py` define presets (`VoiceTuning`) validados a oído
+(`calido_sereno`, `natural`). `speech_synthesis.synthesize` acepta un `tuning`
+explícito o resuelve el preset por defecto de `settings.voice_preset`. La app web
+permite elegirlo en vivo.

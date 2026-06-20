@@ -1,5 +1,8 @@
 # Despliegue — Streamlit Community Cloud
 
+> ✅ **Estado: desplegado con éxito** (2026-06-20). Esta guía documenta el
+> procedimiento y sirve para re-desplegar o reproducir el despliegue.
+
 La interfaz de la familia (`streamlit_app.py`) se despliega en
 **Streamlit Community Cloud** (https://share.streamlit.io), el mismo patrón del
 proyecto `disciplinajudicialai`: sin Docker, sin Procfile; solo el repo en

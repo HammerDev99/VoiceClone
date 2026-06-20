@@ -1,13 +1,17 @@
 # VoiceClone — Memorial de voz "Alexander"
 
-Proyecto para **clonar la voz** de un ser querido (Alexander) usando la API de
+Proyecto para **clonar la voz** de un ser querido (Alexander) con la API de
 **ElevenLabs** (Instant Voice Cloning), dotarla de una **personalidad** mediante
-**Claude** (Anthropic), y **generar audio** (texto → voz) que honre su memoria.
+**Claude** (Anthropic), **generar audio** (texto → voz) y **conversar** con él —
+desde la terminal o desde una **interfaz web** pensada para la familia.
 
 > 🕊️ Este es un proyecto sensible, pensado como espacio de consuelo y reconexión
 > para quienes recuerdan a Alexander. El código, los textos y el trato se cuidan
 > con dignidad. Clona una voz únicamente si tienes el consentimiento o los
 > derechos para hacerlo (requisito de los Términos de ElevenLabs).
+
+**Estado**: Gates F1 y F2 aprobados · 69 tests · ruff/mypy limpios ·
+**desplegado en Streamlit Community Cloud**.
 
 ---
 
@@ -17,10 +21,14 @@ Proyecto para **clonar la voz** de un ser querido (Alexander) usando la API de
 - [Instalación paso a paso](#instalación-paso-a-paso)
 - [Configuración de claves](#configuración-de-claves)
 - [Preparar las muestras de voz](#preparar-las-muestras-de-voz)
-- [Uso](#uso)
+- [Uso (terminal)](#uso-terminal)
+- [Interfaz web para la familia](#interfaz-web-para-la-familia)
+- [Despliegue](#despliegue)
+- [Calidad de voz (presets)](#calidad-de-voz-presets)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Metodología (CDAID v2)](#metodología-cdaid-v2)
 - [Calidad y tests](#calidad-y-tests)
+- [Roadmap](#roadmap)
 
 ---
 
@@ -36,17 +44,9 @@ Proyecto para **clonar la voz** de un ser querido (Alexander) usando la API de
 ## Instalación paso a paso
 
 ```bash
-# 1. (Ya hecho) Entorno virtual
-py -m venv .venv
-
-# 2. Activar el entorno
-#    Windows PowerShell:
-.venv\Scripts\Activate.ps1
-#    Windows Git Bash:
-source .venv/Scripts/activate
-
-# 3. Instalar dependencias (runtime + desarrollo)
-pip install -r requirements-dev.txt
+py -m venv .venv                      # 1. entorno virtual
+.venv\Scripts\Activate.ps1           # 2. activar (Windows PowerShell)
+pip install -r requirements-dev.txt  # 3. dependencias (runtime + desarrollo)
 ```
 
 ## Configuración de claves
@@ -63,28 +63,61 @@ Edita `.env` y completa:
 | `ANTHROPIC_API_KEY` | API key de Anthropic (Claude). |
 | `VOICE_NAME` | Nombre de la voz (por defecto `Alexander`). |
 | `VOICE_ID` | Se rellena solo tras clonar; reutiliza la voz sin re-clonar. |
+| `VOICE_PRESET` | Tono de voz por defecto: `calido_sereno` o `natural`. |
 
 > 🔐 `.env` está en `.gitignore`. **Nunca** lo subas al repositorio.
 
 ## Preparar las muestras de voz
 
 Coloca los archivos `.m4a` en la carpeta [`audios/`](audios/README.md).
-Recomendaciones para mejor calidad:
+Recomendaciones: **1–5 minutos** de audio limpio, sin ruido ni varias personas;
+varios clips cortos suelen rendir mejor que uno largo. Más muestras → más fidelidad.
 
-- Entre **1 y 5 minutos** de audio en total (IVC).
-- Voz **limpia**, sin música de fondo, ruido ni varias personas hablando.
-- Varios clips cortos suelen funcionar mejor que uno largo.
-
-## Uso
+## Uso (terminal)
 
 Los scripts están numerados según el flujo natural:
 
 ```bash
-python scripts/01_verificar_conexion.py      # Verifica API keys y muestra info de la cuenta
+python scripts/01_verificar_conexion.py      # Verifica API keys y estado de la cuenta
 python scripts/02_clonar_voz.py              # Clona "Alexander" desde audios/ y guarda VOICE_ID
 python scripts/03_generar_voz.py "Hola..."   # Genera TTS con la voz clonada -> output/
+python scripts/05_calibrar_voz.py "..."      # Compara presets de voz -> output/calibracion/
 python scripts/04_conversar.py               # Conversa con la persona (Claude) y la escucha
+python scripts/06_app_familia.py             # Lanza la interfaz web (Streamlit)
 ```
+
+## Interfaz web para la familia
+
+Una app **Streamlit** ([`streamlit_app.py`](streamlit_app.py)) con chat amable:
+la familia escribe, Alexander responde **con su personalidad y su voz**, y la
+conversación mantiene su hilo (contexto por sesión). Incluye un **selector de
+tono de voz** en la barra lateral (Cálido y sereno / Natural).
+
+```bash
+streamlit run streamlit_app.py        # o:  python scripts/06_app_familia.py
+```
+
+## Despliegue
+
+Desplegada en **Streamlit Community Cloud** (mismo patrón que el proyecto de
+referencia del autor). Guía completa en [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.md):
+repo en GitHub → app en share.streamlit.io con *main file* `streamlit_app.py` →
+secretos en la UI (plantilla en `.streamlit/secrets.toml.example`). La app usa un
+puente `st.secrets → os.environ`, por lo que funciona igual en local (`.env`) y en
+la nube.
+
+## Calidad de voz (presets)
+
+El tono se afina con `VoiceTuning` (stability, similarity, style, speed). Hay dos
+presets validados a oído:
+
+| Preset | Carácter |
+|--------|----------|
+| `calido_sereno` | Pausado y afectuoso (por defecto). |
+| `natural` | Equilibrado y consistente. |
+
+Compara muestras con `scripts/05_calibrar_voz.py` y fija tu favorito en
+`VOICE_PRESET` (o cámbialo en vivo desde la barra lateral de la app web).
 
 ## Estructura del proyecto
 
@@ -92,9 +125,11 @@ Ver [`CLAUDE.md`](CLAUDE.md) para el árbol completo y las reglas. Resumen:
 
 ```
 src/voiceclone/   código (config, infrastructure, domain, services, cli)
-scripts/          entrypoints ejecutables (01..04)
-audios/           muestras .m4a (privadas)
-output/           audio generado
+streamlit_app.py  interfaz web para la familia (entrypoint de Streamlit Cloud)
+.streamlit/       config.toml (tema) + secrets.toml.example
+scripts/          entrypoints ejecutables (01..06)
+audios/           muestras .m4a (privadas, gitignored)
+output/           audio generado + calibracion/ (gitignored)
 tests/            pruebas unitarias y property-based
 docs/ agent_docs/ documentación CDAID v2
 ```
@@ -111,11 +146,19 @@ El proyecto sigue el framework **CDAID v2** (Plan → Do → Check → Act):
 ## Calidad y tests
 
 ```bash
-pytest -x            # tests (los marcados 'integration' se omiten por defecto)
-pytest --cov         # con cobertura
-ruff check src tests scripts
+pytest -q --cov                       # 69 tests (los 'integration' se omiten por defecto)
+ruff check src tests scripts streamlit_app.py
 mypy src
 ```
+
+## Roadmap
+
+- **Canal de WhatsApp** (elegido: **Twilio sandbox** para empezar): permitir a la
+  familia conversar con Alexander por mensajería, recibiendo **notas de voz**.
+  Requiere un backend con webhook (FastAPI) que reutilice el núcleo `voiceclone`.
+  Ver consideraciones en `agent_docs/project_status.md` (sección Roadmap).
+- Streaming token a token en la UI; gestión de voces; control de acceso por lista
+  blanca de números para el canal de mensajería.
 
 ---
 

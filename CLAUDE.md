@@ -95,8 +95,14 @@ Despliegue web (Streamlit Community Cloud): ver `docs/DESPLIEGUE.md`.
 ```
 Sprint 01 (clonado IVC + TTS + persona):  [████████████████████] ✅ Gate F1
 Sprint 02 (calidad de voz + UI familia):  [████████████████████] ✅ Gate F2
-Despliegue Streamlit Cloud:               [████████░░░░░░░░░░░░] pendiente
+Despliegue Streamlit Cloud:               [████████████████████] ✅ desplegado
+F3 Canal WhatsApp (Twilio):               [░░░░░░░░░░░░░░░░░░░░] roadmap
 ```
+
+**Roadmap**: canal de WhatsApp (vía elegida: **Twilio sandbox**) para que la
+familia converse con notas de voz; requiere backend con webhook (FastAPI) que
+reutiliza el núcleo. Pendiente de un planning formal sobre ética del *digital
+afterlife*. Detalle en `agent_docs/project_status.md`.
 
 | Metrica | Valor |
 |---------|-------|

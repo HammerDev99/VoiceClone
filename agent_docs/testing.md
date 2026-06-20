@@ -16,14 +16,21 @@ pytest -m integration        # SÓLO las pruebas que tocan APIs reales (requiere
 
 ```
 tests/
-  conftest.py              fixture make_settings (factory de Settings)
-  test_models.py           DTOs: inmutabilidad y propiedades
-  test_settings.py         carga de .env y persistencia de VOICE_ID
-  test_persona.py          identidad de Alexander
-  test_voice_cloning.py    discover_samples + clone_voice (mocks)
-  test_speech_synthesis.py slugify, formato, synthesize (mocks + PBT)
-  test_conversation.py     to_message_params + validaciones de generate_reply
+  conftest.py               fixture make_settings (factory de Settings)
+  test_models.py            DTOs: inmutabilidad y propiedades
+  test_settings.py          carga de .env y persistencia de VOICE_ID
+  test_persona.py           identidad de Alexander
+  test_voice_presets.py     presets de voz (get_preset, rangos, inmutabilidad)
+  test_voice_cloning.py     discover_samples + clone_voice (mocks)
+  test_speech_synthesis.py  slugify, formato, synthesize, tuning, output_path (mocks + PBT)
+  test_elevenlabs_client.py wrappers del SDK ElevenLabs (mocks)
+  test_anthropic_client.py  wrappers del SDK Anthropic (mocks)
+  test_conversation.py      to_message_params + generate_reply (infra mockeada)
+  test_streamlit_app.py     smoke test de la app web (AppTest, sin red)
 ```
+
+Total: **69 tests**. La app Streamlit se valida con `streamlit.testing.v1.AppTest`
+(no requiere levantar servidor ni red).
 
 ## Principios
 
