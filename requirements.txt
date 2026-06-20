@@ -5,3 +5,4 @@ elevenlabs>=1.50.0      # SDK oficial de ElevenLabs (clonado IVC + TTS)
 anthropic>=0.40.0       # SDK de Claude para la capa conversacional (persona)
 python-dotenv>=1.0.1    # Carga de variables desde .env
 returns>=0.23.0         # Result[T, E] (Success/Failure) - manejo de errores
+streamlit>=1.40.0       # Interfaz web para la familia (chat + audio)

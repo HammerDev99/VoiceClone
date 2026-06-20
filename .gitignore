@@ -2,6 +2,7 @@
 .env
 .env.local
 *.key
+.streamlit/secrets.toml
 
 # --- Entorno virtual ---
 .venv/
