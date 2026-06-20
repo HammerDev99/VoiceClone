@@ -198,13 +198,31 @@ mypy src
 | Verificación por etapa | `ruff` + `mypy --strict` + `pytest` + auditoría multi-instrumento |
 | Pruebas contra API real | ElevenLabs (cuenta, IVC, TTS) y Anthropic (conversación) |
 
-**Consumo de la sesión** _(completar desde Claude Code con `/cost`)_
+**Consumo de la sesión** _(datos reales de `/usage`, Claude Code)_
 
 | Dato | Valor |
-|------|-------|
-| Tokens totales (in/out) | _ejecutar `/cost`_ |
-| Coste estimado | _ejecutar `/cost`_ |
-| Duración de la sesión | _ver panel de Claude Code_ |
+|------|------:|
+| Coste total | **$37.86** |
+| Duración (API) | 1h 2m 55s |
+| Duración (wall clock) | 7h 28m 24s |
+| Cambios de código | +4.523 / −242 líneas |
+
+**Tokens por modelo**
+
+| Modelo | Input | Output | Cache read | Cache write | Coste |
+|--------|------:|-------:|-----------:|------------:|------:|
+| `claude-opus-4-8` | 39,1k | 253,2k | 47,7M | 748,9k | $37,86 |
+| `claude-haiku-4-5` | 673 | 20 | 0 | 0 | $0,0008 |
+
+**Dónde se concentró el gasto**
+
+| Fuente | % del uso |
+|--------|----------:|
+| Skill `/streamlit` | 39% |
+| MCP Context7 | 27% |
+| Skill `/design-patterns` | 14% |
+| Skill `/sdd-framework-v2` | 3% |
+| Contexto > 150k tokens | 85% del uso total |
 
 **Aprendizajes (agentic engineering)**
 
@@ -215,6 +233,12 @@ mypy src
 - **Decisiones del humano explícitas**: las elecciones de producto se capturaron con
   preguntas (trazas de delegación), no se asumieron.
 - **Commits por partes**: historial trazable, cada commit compila y pasa el gate.
+- **Coste dominado por el contexto largo**: el *cache read* (47,7M tokens) refleja la
+  reutilización de contexto; aun cacheado, operar a >150k encarece. Mitigación:
+  `/compact` a mitad de tarea y `/clear` al cambiar de tarea.
+- **Skills pesadas y MCP**: `/streamlit` (39%) y Context7 (27%) cargan mucho contexto
+  que permanece en la sesión. Acotar skills, usar modelo más barato vía *frontmatter*
+  y `/compact` para liberar resultados de MCP tras usarlos.
 
 **Regenerar las métricas del producto**
 
