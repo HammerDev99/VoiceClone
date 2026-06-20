@@ -25,3 +25,19 @@ def test_persona_es_inmutable() -> None:
 def test_voice_description_es_masculina() -> None:
     desc = voice_description().lower()
     assert "masculina" in desc
+
+
+def test_persona_tiene_protocolo_de_crisis() -> None:
+    prompt = alexander_persona().system_prompt.lower()
+    assert "linea 106" in prompt or "línea 106" in prompt
+    assert "protocolo de crisis" in prompt
+
+
+def test_persona_prohibe_invitacion_a_la_reunion() -> None:
+    prompt = alexander_persona().system_prompt.lower()
+    assert "prohibicion absoluta" in prompt or "prohibición absoluta" in prompt
+
+
+def test_persona_no_promete_sanacion_completa() -> None:
+    prompt = alexander_persona().system_prompt.lower()
+    assert "vinculos continuos" in prompt or "vínculos continuos" in prompt
