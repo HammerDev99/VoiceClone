@@ -10,7 +10,7 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 > con dignidad. Clona una voz únicamente si tienes el consentimiento o los
 > derechos para hacerlo (requisito de los Términos de ElevenLabs).
 
-**Estado**: Gates F1, F2 y F3 aprobados · 96 tests · ruff/mypy limpios ·
+**Estado**: Gates F1, F2 y F3 aprobados · 97 tests · ruff/mypy limpios ·
 **desplegado en Streamlit Community Cloud**. Incluye guardrails éticos y un
 backstop de crisis (ver [Seguridad y ética](#seguridad-y-ética-del-duelo)).
 
@@ -94,7 +94,9 @@ python scripts/06_app_familia.py             # Lanza la interfaz web (Streamlit)
 Una app **Streamlit** ([`streamlit_app.py`](streamlit_app.py)) con chat amable:
 la familia escribe, Alexander responde **con su personalidad y su voz**, y la
 conversación mantiene su hilo (contexto por sesión). Incluye un **selector de
-tono de voz** en la barra lateral (Cálido y sereno / Natural).
+tono de voz** en la barra lateral (Cálido y sereno / Natural), una **pantalla de
+consentimiento** y **fricción positiva** (ver [Seguridad y ética](#seguridad-y-ética-del-duelo))
+y, opcionalmente, **analítica web (Umami)** de páginas vistas en el despliegue.
 
 ```bash
 streamlit run streamlit_app.py        # o:  python scripts/06_app_familia.py
@@ -107,7 +109,8 @@ referencia del autor). Guía completa en [`docs/DESPLIEGUE.md`](docs/DESPLIEGUE.
 repo en GitHub → app en share.streamlit.io con *main file* `streamlit_app.py` →
 secretos en la UI (plantilla en `.streamlit/secrets.toml.example`). La app usa un
 puente `st.secrets → os.environ`, por lo que funciona igual en local (`.env`) y en
-la nube.
+la nube. La guía incluye un secreto **opcional** `ANALYTICS_SCRIPT` para activar
+analítica web (Umami) solo en la nube — registra páginas vistas, no conversaciones.
 
 ## Calidad de voz (presets)
 
@@ -168,7 +171,7 @@ auditoría de la fase F3 (`docs/plannings/planning_03_*`, `docs/validate/AUDIT_0
 ## Calidad y tests
 
 ```bash
-pytest -q --cov                       # 96 tests (los 'integration' se omiten por defecto)
+pytest -q --cov                       # 97 tests (los 'integration' se omiten por defecto)
 ruff check src tests scripts streamlit_app.py
 mypy src
 ```
@@ -186,7 +189,7 @@ mypy src
 
 > Meta-observabilidad del propio proceso de construcción asistido por IA. Sirve
 > como referencia para desarrollar soluciones con *agentic engineering*.
-> Datos al 2026-06-20 (Gates F1 y F2). Regenerables (ver final de sección).
+> Datos al 2026-06-20 (Gates F1, F2 y F3 + analítica). Regenerables (ver final de sección).
 
 **Modelo y entorno**
 
@@ -200,13 +203,13 @@ mypy src
 
 | Métrica | Valor |
 |---------|:-----:|
-| Commits | 7 (3 `feat`, 2 `docs`, 1 `refactor`, 1 `chore`) |
-| Archivos versionados | 73 |
-| Código fuente (`src/`) | 18 módulos · ~1.101 LOC |
-| Tests | 12 archivos · ~677 LOC · **69 tests** |
-| Scripts / Docs | 6 scripts · 28 `.md` (~1.605 LOC) |
+| Commits | 17 (9 `feat`, 6 `docs`, 1 `refactor`, 1 `chore`) |
+| Archivos versionados | 78 |
+| Código fuente (`src/`) | 19 módulos · ~951 LOC |
+| Tests | 13 archivos · ~641 LOC · **97 tests** |
+| Scripts / Docs | 6 scripts · 30 `.md` |
 | Dependencias runtime | 5 |
-| Gates CDAID aprobados | F1, F2 (F3 planificado) |
+| Gates CDAID aprobados | F1, F2, F3 ✅ |
 
 **Proceso agéntico**
 
@@ -223,27 +226,32 @@ mypy src
 
 | Dato | Valor |
 |------|------:|
-| Coste total | **$37.86** |
-| Duración (API) | 1h 2m 55s |
-| Duración (wall clock) | 7h 28m 24s |
-| Cambios de código | +4.523 / −242 líneas |
+| Coste total | **$50.66** |
+| **Tiempo de ejecución total** (wall clock) | **9h 24m 12s** |
+| Tiempo de cómputo (API) | 1h 23m 45s |
+| Cambios de código | +5.264 / −327 líneas |
+
+> El **tiempo de ejecución total** (wall clock, 9h 24m) mide el lapso real de
+> trabajo en la sesión; el **tiempo de cómputo (API)** (1h 24m) es el subconjunto
+> en que el modelo estuvo generando. La diferencia es lectura, edición, ejecución
+> de tests y decisiones humanas.
 
 **Tokens por modelo**
 
 | Modelo | Input | Output | Cache read | Cache write | Coste |
 |--------|------:|-------:|-----------:|------------:|------:|
-| `claude-opus-4-8` | 39,1k | 253,2k | 47,7M | 748,9k | $37,86 |
+| `claude-opus-4-8` | 85,9k | 334,5k | 61,5M | 1,1M | $50,66 |
 | `claude-haiku-4-5` | 673 | 20 | 0 | 0 | $0,0008 |
 
 **Dónde se concentró el gasto**
 
 | Fuente | % del uso |
 |--------|----------:|
-| Skill `/streamlit` | 39% |
-| MCP Context7 | 27% |
-| Skill `/design-patterns` | 14% |
-| Skill `/sdd-framework-v2` | 3% |
-| Contexto > 150k tokens | 85% del uso total |
+| Skill `/streamlit` | 30% |
+| MCP Context7 | 21% |
+| Skill `/design-patterns` | 11% |
+| Skill `/sdd-framework-v2` | 2% |
+| Contexto > 150k tokens | 77% del uso total |
 
 **Aprendizajes (agentic engineering)**
 
@@ -254,10 +262,10 @@ mypy src
 - **Decisiones del humano explícitas**: las elecciones de producto se capturaron con
   preguntas (trazas de delegación), no se asumieron.
 - **Commits por partes**: historial trazable, cada commit compila y pasa el gate.
-- **Coste dominado por el contexto largo**: el *cache read* (47,7M tokens) refleja la
-  reutilización de contexto; aun cacheado, operar a >150k encarece. Mitigación:
-  `/compact` a mitad de tarea y `/clear` al cambiar de tarea.
-- **Skills pesadas y MCP**: `/streamlit` (39%) y Context7 (27%) cargan mucho contexto
+- **Coste dominado por el contexto largo**: el *cache read* (61,5M tokens) refleja la
+  reutilización de contexto; aun cacheado, operar a >150k encarece (77% del uso).
+  Mitigación: `/compact` a mitad de tarea y `/clear` al cambiar de tarea.
+- **Skills pesadas y MCP**: `/streamlit` (30%) y Context7 (21%) cargan mucho contexto
   que permanece en la sesión. Acotar skills, usar modelo más barato vía *frontmatter*
   y `/compact` para liberar resultados de MCP tras usarlos.
 

@@ -61,3 +61,12 @@ presets válidos son `calido_sereno` y `natural` (ver `domain/voice_presets.py`)
 
 ## Quiero cambiar el preset por defecto
 Edita `VOICE_PRESET` en `.env` (local) o en *Secrets* (nube).
+
+## La analítica (Umami) no registra visitas
+La analítica es opcional y **solo se activa en la nube**. Verifica que el secreto
+`ANALYTICS_SCRIPT` esté definido en *App → Settings → Secrets* con el snippet
+completo (debe incluir `src="..."` y `data-website-id="..."`). En local no se
+activa (no hay `secrets.toml`). El script se inyecta una sola vez en el `<head>`;
+si recargas y no ves peticiones a `script.js`, revisa que el snippet esté bien
+formado y que el dominio de Umami sea accesible. Solo registra páginas vistas, no
+el contenido de las conversaciones.

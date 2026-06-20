@@ -91,3 +91,14 @@ para webhooks). Ver `agent_docs/project_status.md` → Roadmap.
 (`calido_sereno`, `natural`). `speech_synthesis.synthesize` acepta un `tuning`
 explícito o resuelve el preset por defecto de `settings.voice_preset`. La app web
 permite elegirlo en vivo.
+
+## Analítica web (opcional, solo capa de presentación)
+
+`streamlit_app.py` incorpora `_inject_analytics()`: lee el secreto opcional
+`ANALYTICS_SCRIPT` (snippet de Umami) desde `st.secrets`, extrae `src` y
+`data-website-id`, e inyecta el `<script>` una sola vez en el `<head>` del
+documento padre (vía `components.html`, evitando duplicados). Es exclusivo de la
+capa web: **no toca el núcleo** (`domain`/`services`/`infrastructure`) y solo se
+activa en la nube. Coherente con la regla de privacidad: Umami registra páginas
+vistas, **nunca** el contenido de las conversaciones. Sin el secreto, se omite en
+silencio (en local la analítica queda desactivada).

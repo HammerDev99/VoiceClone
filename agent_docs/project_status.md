@@ -32,7 +32,10 @@ WhatsApp (ver Roadmap), una vez revisadas sus implicaciones éticas a la luz de 
 - [x] Sprint 03: ética del duelo + guardrails. Persona reescrita (Vínculos
       Continuos), `domain/safety.py` (backstop de crisis, Línea 106), `temperature`
       configurable (0.4), consentimiento y fricción positiva en la UI.
-- [x] 96 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
+- [x] **Analítica web opcional (Umami)** en la app: secreto `ANALYTICS_SCRIPT`
+      inyectado en el `<head>` (solo páginas vistas, no contenido). Ver
+      `docs/DESPLIEGUE.md` y `.streamlit/secrets.toml.example`.
+- [x] 97 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
 
 ## Pendiente del usuario
 
@@ -71,7 +74,7 @@ WhatsApp → webhook (FastAPI) → conversation (Claude+persona) → speech_synt
 
 | Tests | ruff | mypy | Tasa SDD | Gates |
 |:-----:|:----:|:----:|:--------:|:-----:|
-| 96 | 0 | 0 | 100% | F1, F2, F3 ✅ |
+| 97 | 0 | 0 | 100% | F1, F2, F3 ✅ |
 
 ## Flujo de scripts
 
