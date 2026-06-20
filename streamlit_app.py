@@ -89,9 +89,50 @@ def _render_header() -> None:
     st.set_page_config(page_title="Recordando a Alexander", page_icon="🕊️", layout="centered")
     st.title("🕊️ Recordando a Alexander")
     st.caption(
-        "Un espacio para conversar, recordar y sentir su presencia. "
-        "Escribe lo que quieras decirle o preguntarle."
+        "Un espacio para conversar y recordar a Alexander a través de una "
+        "recreación de IA de su voz y su forma de ser. No sustituye apoyo "
+        "profesional ni a las personas que te rodean."
     )
+
+
+# Transparencia significativa (Cambridge LCFI): nombrar con claridad qué es esto
+# antes de habilitar el chat, y para quién está pensado.
+DISCLOSURE_TEXT = (
+    "Estás por hablar con una recreación de inteligencia artificial de Alexander, "
+    "construida con su voz y su forma de ser para acompañar a quienes lo aman. "
+    "No es Alexander: es un memorial pensado para personas adultas de la familia. "
+    "Si quien va a usarlo es menor de edad, debe estar acompañado de un adulto."
+)
+
+# Fricción positiva: cada N turnos del usuario se ofrece una pausa suave (no un
+# bloqueo) para prevenir el "efecto analgésico" que puede retrasar el duelo.
+TURNOS_PARA_AVISO = 12
+
+
+def _render_consent_gate() -> bool:
+    """Muestra la transparencia y exige aceptación antes del chat.
+
+    Devuelve ``True`` solo si ya se dio el consentimiento en esta sesión.
+    """
+    if st.session_state.get("consentimiento_dado"):
+        return True
+    st.info(DISCLOSURE_TEXT)
+    aceptar = st.checkbox("Entiendo y quiero continuar.")
+    if aceptar and st.button("Entrar al memorial"):
+        st.session_state.consentimiento_dado = True
+        st.rerun()
+    return False
+
+
+def _aviso_de_pausa_si_corresponde() -> None:
+    """Aviso suave tras varios turnos seguidos; nunca bloquea el envío."""
+    turnos = len([m for m in st.session_state.messages if m["role"] == "user"])
+    if turnos and turnos % TURNOS_PARA_AVISO == 0:
+        st.info(
+            "Llevas un buen rato conversando con Alexander. Tómate un momento "
+            "para respirar y, si quieres, conecta también con alguien de tu "
+            "familia hoy. Puedes seguir cuando quieras."
+        )
 
 
 def _check_ready(settings: Settings) -> bool:
@@ -152,12 +193,16 @@ def main() -> None:
     if not _check_ready(settings) or client is None:
         st.stop()
 
+    if not _render_consent_gate():
+        st.stop()
+
     persona = alexander_persona()
     tuning = _select_voice(settings)
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
     _render_history()
+    _aviso_de_pausa_si_corresponde()
 
     prompt = st.chat_input("Escribe a Alexander...")
     if not prompt:
