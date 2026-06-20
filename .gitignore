@@ -1,0 +1,46 @@
+# --- Secretos / entorno ---
+.env
+.env.local
+*.key
+
+# --- Entorno virtual ---
+.venv/
+venv/
+env/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Herramientas / cache ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.coverage
+htmlcov/
+coverage.xml
+
+# --- Audios de entrada (privados, voz personal) ---
+# Las muestras de voz son datos personales sensibles: NO se versionan.
+audios/*
+!audios/README.md
+
+# --- Audio generado ---
+output/*
+!output/.gitkeep
+
+# --- IDE / SO ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Jupyter ---
+.ipynb_checkpoints/
