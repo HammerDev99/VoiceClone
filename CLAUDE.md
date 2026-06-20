@@ -89,6 +89,10 @@ Despliegue web (Streamlit Community Cloud): ver `docs/DESPLIEGUE.md`.
    (NO se versionan). Esta es la voz de un ser querido: tratar el codigo, los
    textos y los logs con respeto. Clonar solo con consentimiento/derechos sobre la voz.
 6. **Calidad**: todo cambio pasa `pytest -x` + `ruff check` + `mypy --strict`.
+7. **Protocolo de crisis (no negociable)**: ante una senal de autolesion, el
+   backstop `domain/safety.py` corta camino y devuelve `CRISIS_RESPONSE` (Linea 106,
+   Colombia) SIN invocar al LLM. La seguridad no depende del prompt ni del modelo.
+   Nunca debilitar ni eludir este corte; el log registra la senal, jamas el contenido.
 
 ## Estado Actual
 
@@ -96,23 +100,27 @@ Despliegue web (Streamlit Community Cloud): ver `docs/DESPLIEGUE.md`.
 Sprint 01 (clonado IVC + TTS + persona):  [████████████████████] ✅ Gate F1
 Sprint 02 (calidad de voz + UI familia):  [████████████████████] ✅ Gate F2
 Despliegue Streamlit Cloud:               [████████████████████] ✅ desplegado
-F3 Canal WhatsApp (Twilio):               [░░░░░░░░░░░░░░░░░░░░] roadmap
+Sprint 03 (etica, guardrails, friccion):  [████████████████████] ✅ Gate F3
+F3+ Canal WhatsApp (Twilio):              [░░░░░░░░░░░░░░░░░░░░] roadmap
 ```
 
 **Roadmap**: canal de WhatsApp (vía elegida: **Twilio sandbox**) para que la
 familia converse con notas de voz; requiere backend con webhook (FastAPI) que
-reutiliza el núcleo. Pendiente de un planning formal sobre ética del *digital
-afterlife*. Detalle en `agent_docs/project_status.md`.
+reutiliza el núcleo. El planning de ética del *digital afterlife* ya está
+ejecutado (planning_03 / Gate F3): persona con guardrails, backstop de crisis y
+consentimiento. Detalle en `agent_docs/project_status.md`.
 
 | Metrica | Valor |
 |---------|-------|
-| Fase CDAID | Check completado (F1, F2 aprobados) |
-| Tests | 69 (ruff 0, mypy 0) — ver `agent_docs/project_status.md` |
+| Fase CDAID | Check completado (F1, F2, F3 aprobados) |
+| Tests | 96 (ruff 0, mypy 0) — ver `agent_docs/project_status.md` |
 | Voz clonada | `VOICE_ID=A1w42DVwDu80oNyR6BeL` (5 muestras) |
 | Preset por defecto | `calido_sereno` (alt: `natural`) |
+| Seguridad | backstop de crisis (`domain/safety.py`, Linea 106) + consentimiento UI |
 
 ## Compact Instructions
 
 Al compactar, preserva: (1) que es un memorial con voz clonada de "Alexander"
-(hombre, voz masculina), (2) stack ElevenLabs IVC + Claude, (3) las 6 reglas
-criticas, (4) el SPEC activo en `docs/sprints/`, (5) el tono de dignidad del proyecto.
+(hombre, voz masculina), (2) stack ElevenLabs IVC + Claude, (3) las 7 reglas
+criticas (incluida la #7 de protocolo de crisis no negociable), (4) el SPEC activo
+en `docs/sprints/`, (5) el tono de dignidad del proyecto.

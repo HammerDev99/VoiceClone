@@ -10,8 +10,9 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 > con dignidad. Clona una voz únicamente si tienes el consentimiento o los
 > derechos para hacerlo (requisito de los Términos de ElevenLabs).
 
-**Estado**: Gates F1 y F2 aprobados · 69 tests · ruff/mypy limpios ·
-**desplegado en Streamlit Community Cloud**.
+**Estado**: Gates F1, F2 y F3 aprobados · 96 tests · ruff/mypy limpios ·
+**desplegado en Streamlit Community Cloud**. Incluye guardrails éticos y un
+backstop de crisis (ver [Seguridad y ética](#seguridad-y-ética-del-duelo)).
 
 ---
 
@@ -27,6 +28,7 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 - [Calidad de voz (presets)](#calidad-de-voz-presets)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Metodología (CDAID v2)](#metodología-cdaid-v2)
+- [Seguridad y ética del duelo](#seguridad-y-ética-del-duelo)
 - [Calidad y tests](#calidad-y-tests)
 - [Roadmap](#roadmap)
 - [Datos de ingeniería agéntica](#datos-de-ingeniería-agéntica-agentic-engineering)
@@ -144,10 +146,29 @@ El proyecto sigue el framework **CDAID v2** (Plan → Do → Check → Act):
 - **Check** → [`docs/validate/`](docs/validate/)
 - **Act** → correcciones dentro de cada auditoría
 
+## Seguridad y ética del duelo
+
+Un memorial conversacional toca emociones frágiles. El proyecto incorpora
+guardrails validados en la literatura sobre *griefbots* (Cambridge LCFI 2024;
+Lindemann 2022; marco de *Vínculos Continuos*). Detalle en el planning y la
+auditoría de la fase F3 (`docs/plannings/planning_03_*`, `docs/validate/AUDIT_03_*`).
+
+- **Backstop de crisis (no depende del modelo)**: `domain/safety.py` detecta
+  señales de autolesión y `conversation.generate_reply` corta camino devolviendo
+  un recurso real y verificado (**Línea 106**, Colombia, gratuita, 24 h) **sin
+  invocar al LLM**. El log registra la señal, nunca el contenido del mensaje.
+- **Persona con guardrails**: el system prompt prohíbe invitar al "reencuentro",
+  veta la alucinación de recuerdos, valida la emoción antes de aconsejar y no
+  trata el duelo como un problema a "resolver".
+- **`ANTHROPIC_TEMPERATURE` baja (0.4)**: reduce el riesgo de inventar recuerdos
+  y la complacencia excesiva.
+- **Transparencia y fricción positiva** (UI): pantalla de consentimiento que
+  nombra que es una recreación de IA, y un aviso suave de pausa tras varios turnos.
+
 ## Calidad y tests
 
 ```bash
-pytest -q --cov                       # 69 tests (los 'integration' se omiten por defecto)
+pytest -q --cov                       # 96 tests (los 'integration' se omiten por defecto)
 ruff check src tests scripts streamlit_app.py
 mypy src
 ```

@@ -98,7 +98,7 @@ integración de todo esto en la arquitectura y convenciones reales del repo
 | **Origen** | Hallazgos §0 (negación, alucinación, culpa, dependencia, framing) |
 | **Archivos** | `src/voiceclone/domain/persona.py:17-63` |
 | **Prioridad** | P0 — es el corazón del comportamiento del memorial |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos** — reemplazar `ALEXANDER_SYSTEM_PROMPT` por:
 
@@ -195,7 +195,7 @@ asistente de IA tradicional.
 | **Origen** | Hallazgo §0 — alucinación de recuerdos; el cliente actual no fija `temperature` (usa el default de la API, 1.0) |
 | **Archivos** | `config/settings.py`, `infrastructure/anthropic_client.py`, `services/conversation.py` |
 | **Prioridad** | P1 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos**:
 
@@ -229,7 +229,7 @@ class Settings:
 | **Origen** | Cobertura de SPEC-03-A01 |
 | **Archivos** | `tests/test_persona.py` |
 | **Prioridad** | P1 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos** — añadir, junto a los tests existentes:
 ```python
@@ -262,7 +262,7 @@ def test_persona_no_promete_sanacion_completa() -> None:
 | **Origen** | Hallazgo §0 — la seguridad no puede depender solo de que el modelo "decida bien" cada vez (riesgo documentado de validar una crisis en vez de frenarla) |
 | **Archivos** | `src/voiceclone/domain/safety.py` (nuevo) |
 | **Prioridad** | P0 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Justificación de diseño**: esta es la pieza más importante del planning. El
 prompt (Fase A) es la primera línea de defensa, pero un LLM puede fallar bajo
@@ -328,7 +328,7 @@ CRISIS_RESPONSE = (
 | **Origen** | Integra B-01/B-02 en el flujo real |
 | **Archivos** | `src/voiceclone/services/conversation.py:34-68` |
 | **Prioridad** | P0 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos**:
 ```python
@@ -372,7 +372,7 @@ def generate_reply(
 | **Origen** | Cobertura de B-01..B-03 |
 | **Archivos** | `tests/test_safety.py` (nuevo), `tests/test_conversation.py` |
 | **Prioridad** | P0 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos** — `tests/test_safety.py`:
 ```python
@@ -440,7 +440,7 @@ def test_generate_reply_corta_camino_en_crisis(
 | **Origen** | Hallazgo §0 — transparencia significativa y prevención de dependencia (Cambridge LCFI) |
 | **Archivos** | `streamlit_app.py` |
 | **Prioridad** | P1 |
-| **Estado** | `[ ]` pendiente |
+| **Estado** | `[x]` completado |
 
 **Cambios requeridos**:
 
@@ -528,17 +528,17 @@ def _aviso_de_pausa_si_corresponde() -> None:
 
 ## 5. Criterios de éxito
 
-- [ ] `ALEXANDER_SYSTEM_PROMPT` reescrito con los 7 bloques de guardrails (filosofía,
+- [x] `ALEXANDER_SYSTEM_PROMPT` reescrito con los 7 bloques de guardrails (filosofía,
       tono/ritmo, cero alucinación, culpa, anclaje a realidad, límites de consejo,
       prohibición de reunión, protocolo de crisis).
-- [ ] `domain/safety.py` existe, es puro, y `conversation.generate_reply` lo usa
+- [x] `domain/safety.py` existe, es puro, y `conversation.generate_reply` lo usa
       para cortar camino hacia Claude ante señal de crisis.
-- [ ] La interfaz Streamlit exige consentimiento antes del primer mensaje y avisa
+- [x] La interfaz Streamlit exige consentimiento antes del primer mensaje y avisa
       con suavidad tras varios turnos seguidos.
-- [ ] `pytest -x`, `ruff check`, `mypy src` limpios; cobertura de `safety.py` ≥ 90%.
-- [ ] Gate F3 aprobado (`docs/validate/AUDIT_03_...md`) con el nuevo checklist
-      ético/seguridad además del funcional/calidad/arquitectura habitual.
-- [ ] `CLAUDE.md` y `agent_docs/project_status.md` actualizados.
+- [x] `pytest -x`, `ruff check`, `mypy src` limpios; cobertura de `safety.py` = 100% (≥ 90%).
+- [x] Gate F3 aprobado (`docs/validate/AUDIT_03_2026-06-20_GATE_F3_ETICA_GUARDRAILS.md`)
+      con el nuevo checklist ético/seguridad además del funcional/calidad/arquitectura.
+- [x] `CLAUDE.md` y `agent_docs/project_status.md` actualizados.
 
 ## 6. Próximos pasos (handoff a la fase Do)
 
