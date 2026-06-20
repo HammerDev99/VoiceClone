@@ -74,4 +74,5 @@ def generate_reply(
         system=persona.system_prompt,
         messages=_to_message_params(history, clean),
         max_tokens=MAX_REPLY_TOKENS,
+        temperature=settings.anthropic_temperature,
     )

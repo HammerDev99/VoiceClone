@@ -34,7 +34,7 @@ def _client_con_contenido(blocks: list[object]) -> MagicMock:
 def test_generate_message_exito(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(ac, "TextBlock", _DummyTextBlock)
     client = _client_con_contenido([_DummyTextBlock("Hola, soy Alexander.")])
-    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100)
+    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100, 0.4)
     assert isinstance(result, Success)
     assert "Alexander" in result.unwrap()
 
@@ -42,12 +42,20 @@ def test_generate_message_exito(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_generate_message_sin_texto_es_fallo(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(ac, "TextBlock", _DummyTextBlock)
     client = _client_con_contenido([])
-    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100)
+    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100, 0.4)
     assert isinstance(result, Failure)
 
 
 def test_generate_message_maneja_excepcion() -> None:
     client = MagicMock()
     client.messages.create.side_effect = RuntimeError("boom")
-    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100)
+    result = ac.generate_message(client, "claude-opus-4-8", "system", [], 100, 0.4)
     assert isinstance(result, Failure)
+
+
+def test_generate_message_envia_temperature(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(ac, "TextBlock", _DummyTextBlock)
+    client = _client_con_contenido([_DummyTextBlock("ok")])
+    ac.generate_message(client, "claude-opus-4-8", "system", [], 100, 0.4)
+    _, kwargs = client.messages.create.call_args
+    assert kwargs["temperature"] == 0.4

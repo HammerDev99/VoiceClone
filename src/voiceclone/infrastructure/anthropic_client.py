@@ -33,6 +33,7 @@ def generate_message(
     system: str,
     messages: list[MessageParam],
     max_tokens: int,
+    temperature: float,
 ) -> Result[str, str]:
     """Genera una respuesta de Claude y devuelve su texto.
 
@@ -42,6 +43,8 @@ def generate_message(
         system: System prompt (la persona).
         messages: Historial en formato de la API de Claude.
         max_tokens: Limite de tokens de la respuesta.
+        temperature: Aleatoriedad del muestreo (0.0 a 1.0). Valores bajos
+            reducen la alucinacion de recuerdos y la sycophancy.
 
     Returns:
         ``Success(texto)`` o ``Failure(mensaje)``.
@@ -50,6 +53,7 @@ def generate_message(
         response = client.messages.create(
             model=model,
             max_tokens=max_tokens,
+            temperature=temperature,
             system=system,
             messages=messages,
         )
