@@ -26,13 +26,20 @@ import streamlit as st
 from returns.result import Failure, Success
 
 from voiceclone.config.settings import Settings, load_settings
-from voiceclone.domain.models import ConversationTurn
+from voiceclone.domain.models import ConversationTurn, VoiceTuning
 from voiceclone.domain.persona import alexander_persona
+from voiceclone.domain.voice_presets import get_preset, preset_names
 from voiceclone.infrastructure import elevenlabs_client as el
 from voiceclone.services import conversation, speech_synthesis
 
 ASSISTANT_AVATAR = "🕊️"
 USER_AVATAR = "🌿"
+
+# Etiquetas legibles de los presets de voz validados.
+PRESET_LABELS = {
+    "calido_sereno": "Cálido y sereno",
+    "natural": "Natural",
+}
 
 # Claves que la app necesita; en la nube llegan por st.secrets, en local por .env.
 _ENV_KEYS = (
@@ -116,6 +123,24 @@ def _history_turns() -> list[ConversationTurn]:
     ]
 
 
+def _select_voice(settings: Settings) -> VoiceTuning | None:
+    """Selector de tono de voz en la barra lateral; devuelve el tuning elegido."""
+    nombres = preset_names()
+    default_idx = nombres.index(settings.voice_preset) if settings.voice_preset in nombres else 0
+    with st.sidebar:
+        st.subheader("🎚️ Voz de Alexander")
+        elegido = st.selectbox(
+            "Tono de la voz",
+            nombres,
+            index=default_idx,
+            format_func=lambda n: PRESET_LABELS.get(n, n),
+            key="voice_preset_choice",
+            help="Cambia el tono con el que Alexander responde en voz.",
+        )
+    preset_result = get_preset(elegido)
+    return preset_result.unwrap() if isinstance(preset_result, Success) else None
+
+
 def main() -> None:
     _render_header()
     _bridge_secrets_to_env()
@@ -128,6 +153,7 @@ def main() -> None:
         st.stop()
 
     persona = alexander_persona()
+    tuning = _select_voice(settings)
     if "messages" not in st.session_state:
         st.session_state.messages = []
 
@@ -153,7 +179,9 @@ def main() -> None:
 
         audio_bytes: bytes | None = None
         with st.spinner("Generando su voz..."):
-            audio_result = speech_synthesis.synthesize(client, settings, reply)  # type: ignore[arg-type]
+            audio_result = speech_synthesis.synthesize(
+                client, settings, reply, tuning=tuning  # type: ignore[arg-type]
+            )
         if isinstance(audio_result, Success):
             audio_bytes = audio_result.unwrap().path.read_bytes()
             st.audio(audio_bytes, format="audio/mp3", autoplay=True)
