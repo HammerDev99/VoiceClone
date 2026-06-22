@@ -21,7 +21,7 @@ def make_settings(tmp_path: Path) -> Callable[..., Settings]:
             "elevenlabs_output_format": "mp3_44100_128",
             "anthropic_api_key": "",
             "anthropic_model": "claude-opus-4-8",
-            "anthropic_temperature": 0.4,
+            "anthropic_temperature": None,
             "voice_name": "Alexander",
             "voice_id": None,
             "voice_preset": "calido_sereno",

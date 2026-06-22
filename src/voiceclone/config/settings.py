@@ -23,9 +23,11 @@ from voiceclone.domain.voice_presets import DEFAULT_PRESET
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 ENV_PATH = PROJECT_ROOT / ".env"
 
-# Temperatura baja por defecto: reduce alucinacion de recuerdos y sycophancy
-# sin volver el tono rigido. Rango valido de la API: 0.0 a 1.0.
-DEFAULT_TEMPERATURE = 0.4
+# Temperatura del muestreo de Claude. Es OPCIONAL: por defecto no se fija (None) y
+# no se envia a la API. Motivo: los modelos recientes (p.ej. claude-opus-4-8)
+# DEPRECARON 'temperature' y devuelven 400 si se envia. Solo se usa si el usuario
+# la define explicitamente en ANTHROPIC_TEMPERATURE y el modelo la soporta.
+# Rango valido de la API cuando aplica: 0.0 a 1.0.
 
 
 @dataclass(frozen=True)
@@ -37,7 +39,7 @@ class Settings:
     elevenlabs_output_format: str
     anthropic_api_key: str
     anthropic_model: str
-    anthropic_temperature: float
+    anthropic_temperature: float | None
     voice_name: str
     voice_id: str | None
     voice_preset: str
@@ -60,16 +62,20 @@ def _resolve_dir(raw: str) -> Path:
     return path if path.is_absolute() else (PROJECT_ROOT / path)
 
 
-def _parse_temperature(raw: str) -> float:
-    """Convierte el valor de entorno a float y lo acota a [0.0, 1.0].
+def _parse_temperature(raw: str | None) -> float | None:
+    """Convierte el valor de entorno a float acotado a [0.0, 1.0], o ``None``.
 
-    Ante un valor no numerico, vuelve al default seguro. Asi un ``.env`` mal
-    configurado nunca envia una temperatura fuera de rango a la API.
+    Devuelve ``None`` (no fijar temperature) cuando la variable esta ausente,
+    vacia o no es numerica. Asi, por defecto no se envia 'temperature' a la API
+    y se evita el 400 de los modelos que la deprecaron; un valor explicito y
+    valido se respeta (acotado al rango permitido).
     """
+    if raw is None or not raw.strip():
+        return None
     try:
         value = float(raw)
     except ValueError:
-        return DEFAULT_TEMPERATURE
+        return None
     return max(0.0, min(1.0, value))
 
 
@@ -99,9 +105,7 @@ def load_settings(env_path: Path = ENV_PATH) -> Result[Settings, str]:
         elevenlabs_output_format=os.environ.get("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128"),
         anthropic_api_key=os.environ.get("ANTHROPIC_API_KEY", "").strip(),
         anthropic_model=os.environ.get("ANTHROPIC_MODEL", "claude-opus-4-8"),
-        anthropic_temperature=_parse_temperature(
-            os.environ.get("ANTHROPIC_TEMPERATURE", str(DEFAULT_TEMPERATURE))
-        ),
+        anthropic_temperature=_parse_temperature(os.environ.get("ANTHROPIC_TEMPERATURE")),
         voice_name=os.environ.get("VOICE_NAME", "Alexander").strip() or "Alexander",
         voice_id=voice_id_raw or None,
         voice_preset=os.environ.get("VOICE_PRESET", DEFAULT_PRESET).strip() or DEFAULT_PRESET,

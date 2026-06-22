@@ -40,15 +40,17 @@ def test_load_settings_exito(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     assert settings.has_anthropic is False
 
 
-def test_load_settings_temperature_default(
+def test_load_settings_temperature_ausente_es_none(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    # Sin la variable, no se fuerza temperature: se omite (None). Asi es compatible
+    # con modelos que la deprecaron (p.ej. claude-opus-4-8).
     for var in ("ELEVENLABS_API_KEY", "ANTHROPIC_TEMPERATURE"):
         monkeypatch.delenv(var, raising=False)
     env = _write_env(tmp_path / ".env", "ELEVENLABS_API_KEY=sk_real\n")
     result = load_settings(env_path=env)
     assert isinstance(result, Success)
-    assert result.unwrap().anthropic_temperature == 0.4
+    assert result.unwrap().anthropic_temperature is None
 
 
 def test_load_settings_temperature_desde_entorno(
@@ -64,10 +66,10 @@ def test_load_settings_temperature_desde_entorno(
 
 @pytest.mark.parametrize(
     ("crudo", "esperado"),
-    [("1.8", 1.0), ("-0.5", 0.0), ("no-es-numero", 0.4)],
+    [("1.8", 1.0), ("-0.5", 0.0), ("no-es-numero", None), ("", None)],
 )
 def test_load_settings_temperature_se_normaliza(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, crudo: str, esperado: float
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, crudo: str, esperado: float | None
 ) -> None:
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     monkeypatch.setenv("ANTHROPIC_TEMPERATURE", crudo)
