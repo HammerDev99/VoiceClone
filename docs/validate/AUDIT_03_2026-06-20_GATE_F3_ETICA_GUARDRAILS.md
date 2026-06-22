@@ -123,3 +123,18 @@ positiva. 96 tests, ruff/mypy limpios, tasa SDD 100%, cobertura de `safety.py` 1
 > (`safety.detect_crisis_signal` + `CRISIS_RESPONSE`) en su punto de entrada, ya que
 > el corte de camino vive en `conversation.generate_reply` y se hereda al reutilizar
 > el núcleo. Verificar explícitamente que el webhook no esquive ese flujo.
+
+## 7. Correcciones posteriores (fase Act)
+
+| Fecha | Hallazgo | Causa raíz | Corrección | Commit |
+|-------|----------|-----------|------------|--------|
+| 2026-06-22 | Error 400 en **toda** conversación: `temperature is deprecated for this model` | SPEC-03-A02 enviaba `temperature` por defecto (0.4); `claude-opus-4-8` la deprecó | `temperature` pasa a **opcional** (default `None`, no se envía) + **reintento resiliente** en `anthropic_client.generate_message` si el modelo la rechaza | (este commit) |
+
+**Detalle**: la regresión la introdujo la propia fase F3 (control de `temperature`
+para reducir alucinación). El modelo más nuevo del entorno (`claude-opus-4-8`) no
+acepta el parámetro. Solución de ingeniería (no se revierte el SPEC): el control
+sigue disponible para modelos que lo soporten, pero por defecto no se fuerza y, si
+se configura y el modelo lo rechaza, se reintenta sin él (una sola vez) y se registra
+un `warning`. La defensa anti-alucinación principal sigue siendo el prompt (SPEC-03-A01),
+no el muestreo. Cobertura: 4 tests nuevos (settings `None`/normalización; cliente
+omite/reintenta). Suite: 101 tests, ruff/mypy 0.

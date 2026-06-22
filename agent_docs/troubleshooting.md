@@ -62,6 +62,13 @@ presets válidos son `calido_sereno` y `natural` (ver `domain/voice_presets.py`)
 ## Quiero cambiar el preset por defecto
 Edita `VOICE_PRESET` en `.env` (local) o en *Secrets* (nube).
 
+## Error 400: "`temperature` is deprecated for this model"
+El modelo configurado (p.ej. `claude-opus-4-8`) deprecó el parámetro `temperature`.
+La app ya **no lo envía por defecto** (`ANTHROPIC_TEMPERATURE` opcional → `None`).
+Si ves este error: deja `ANTHROPIC_TEMPERATURE` **sin definir** (o comentada) en
+`.env`/*Secrets*. Si la defines a propósito y el modelo la rechaza, el cliente
+reintenta automáticamente sin ella (`anthropic_client.generate_message`).
+
 ## La analítica (Umami) no registra visitas
 La analítica es opcional y **solo se activa en la nube**. Verifica que el secreto
 `ANALYTICS_SCRIPT` esté definido en *App → Settings → Secrets* con el snippet

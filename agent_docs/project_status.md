@@ -31,11 +31,15 @@ WhatsApp (ver Roadmap), una vez revisadas sus implicaciones éticas a la luz de 
 - [x] **Desplegada en Streamlit Community Cloud** (2026-06-20).
 - [x] Sprint 03: ética del duelo + guardrails. Persona reescrita (Vínculos
       Continuos), `domain/safety.py` (backstop de crisis, Línea 106), `temperature`
-      configurable (0.4), consentimiento y fricción positiva en la UI.
+      configurable, consentimiento y fricción positiva en la UI.
+- [x] **Corrección post-F3 (fase Act)**: `claude-opus-4-8` deprecó `temperature`
+      (error 400 en cada conversación). `temperature` pasa a ser **opcional**
+      (default `None`, no se envía) con **reintento resiliente** si el modelo la
+      rechaza. Ver `docs/validate/AUDIT_03_*` (sección Correcciones posteriores).
 - [x] **Analítica web opcional (Umami)** en la app: secreto `ANALYTICS_SCRIPT`
       inyectado en el `<head>` (solo páginas vistas, no contenido). Ver
       `docs/DESPLIEGUE.md` y `.streamlit/secrets.toml.example`.
-- [x] 97 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
+- [x] 101 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
 
 ## Pendiente del usuario
 
@@ -74,7 +78,7 @@ WhatsApp → webhook (FastAPI) → conversation (Claude+persona) → speech_synt
 
 | Tests | ruff | mypy | Tasa SDD | Gates |
 |:-----:|:----:|:----:|:--------:|:-----:|
-| 97 | 0 | 0 | 100% | F1, F2, F3 ✅ |
+| 101 | 0 | 0 | 100% | F1, F2, F3 ✅ |
 
 ## Flujo de scripts
 

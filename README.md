@@ -10,7 +10,7 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 > con dignidad. Clona una voz únicamente si tienes el consentimiento o los
 > derechos para hacerlo (requisito de los Términos de ElevenLabs).
 
-**Estado**: Gates F1, F2 y F3 aprobados · 97 tests · ruff/mypy limpios ·
+**Estado**: Gates F1, F2 y F3 aprobados · 101 tests · ruff/mypy limpios ·
 **desplegado en Streamlit Community Cloud**. Incluye guardrails éticos y un
 backstop de crisis (ver [Seguridad y ética](#seguridad-y-ética-del-duelo)).
 
@@ -163,15 +163,17 @@ auditoría de la fase F3 (`docs/plannings/planning_03_*`, `docs/validate/AUDIT_0
 - **Persona con guardrails**: el system prompt prohíbe invitar al "reencuentro",
   veta la alucinación de recuerdos, valida la emoción antes de aconsejar y no
   trata el duelo como un problema a "resolver".
-- **`ANTHROPIC_TEMPERATURE` baja (0.4)**: reduce el riesgo de inventar recuerdos
-  y la complacencia excesiva.
+- **`ANTHROPIC_TEMPERATURE` opcional**: si el modelo la soporta, una temperatura
+  baja reduce el riesgo de inventar recuerdos. Está **desactivada por defecto**
+  porque los modelos recientes (p.ej. `claude-opus-4-8`) la deprecaron; si se fija
+  y el modelo la rechaza, la app reintenta automáticamente sin ella.
 - **Transparencia y fricción positiva** (UI): pantalla de consentimiento que
   nombra que es una recreación de IA, y un aviso suave de pausa tras varios turnos.
 
 ## Calidad y tests
 
 ```bash
-pytest -q --cov                       # 97 tests (los 'integration' se omiten por defecto)
+pytest -q --cov                       # 101 tests (los 'integration' se omiten por defecto)
 ruff check src tests scripts streamlit_app.py
 mypy src
 ```
@@ -206,7 +208,7 @@ mypy src
 | Commits | 17 (9 `feat`, 6 `docs`, 1 `refactor`, 1 `chore`) |
 | Archivos versionados | 78 |
 | Código fuente (`src/`) | 19 módulos · ~951 LOC |
-| Tests | 13 archivos · ~641 LOC · **97 tests** |
+| Tests | 13 archivos · ~641 LOC · **101 tests** |
 | Scripts / Docs | 6 scripts · 30 `.md` |
 | Dependencias runtime | 5 |
 | Gates CDAID aprobados | F1, F2, F3 ✅ |
