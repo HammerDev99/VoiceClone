@@ -39,7 +39,12 @@ WhatsApp (ver Roadmap), una vez revisadas sus implicaciones éticas a la luz de 
 - [x] **Analítica web opcional (Umami)** en la app: secreto `ANALYTICS_SCRIPT`
       inyectado en el `<head>` (solo páginas vistas, no contenido). Ver
       `docs/DESPLIEGUE.md` y `.streamlit/secrets.toml.example`.
-- [x] 101 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
+- [x] **Matiz paisa (antioqueño) sutil** en la persona (`domain/persona.py`):
+      léxico y calidez paisa con mesura, fuera del protocolo de crisis y sin
+      inventar recuerdos. El acento del timbre depende de las muestras, no del prompt.
+- [x] **Ortografía correcta (ñ + tildes)** instruida en el prompt: evita que las
+      respuestas omitan la ñ (clave para el TTS, p.ej. "año" vs "ano").
+- [x] 105 tests, ruff 0, mypy 0. Auditorías F1, F2 y F3 aprobadas (tasa SDD 100%).
 
 ## Pendiente del usuario
 
@@ -78,7 +83,7 @@ WhatsApp → webhook (FastAPI) → conversation (Claude+persona) → speech_synt
 
 | Tests | ruff | mypy | Tasa SDD | Gates |
 |:-----:|:----:|:----:|:--------:|:-----:|
-| 101 | 0 | 0 | 100% | F1, F2, F3 ✅ |
+| 105 | 0 | 0 | 100% | F1, F2, F3 ✅ |
 
 ## Flujo de scripts
 

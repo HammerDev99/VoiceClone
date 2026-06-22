@@ -19,7 +19,7 @@ tests/
   conftest.py               fixture make_settings (factory de Settings)
   test_models.py            DTOs: inmutabilidad y propiedades
   test_settings.py          carga de .env, persistencia de VOICE_ID, temperature opcional
-  test_persona.py           identidad + guardrails (crisis, prohibición, framing)
+  test_persona.py           identidad + guardrails (crisis, prohibición, framing, paisa, ñ)
   test_safety.py            backstop de crisis (detección + CRISIS_RESPONSE, Línea 106)
   test_voice_presets.py     presets de voz (get_preset, rangos, inmutabilidad)
   test_voice_cloning.py     discover_samples + clone_voice (mocks)
@@ -30,7 +30,7 @@ tests/
   test_streamlit_app.py     smoke + gate de consentimiento + analítica (AppTest, sin red)
 ```
 
-Total: **101 tests**. La app Streamlit se valida con `streamlit.testing.v1.AppTest`
+Total: **105 tests**. La app Streamlit se valida con `streamlit.testing.v1.AppTest`
 (no requiere levantar servidor ni red). La cobertura de `domain/safety.py`
 (lógica de seguridad) es 100%.
 

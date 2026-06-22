@@ -10,7 +10,7 @@ desde la terminal o desde una **interfaz web** pensada para la familia.
 > con dignidad. Clona una voz únicamente si tienes el consentimiento o los
 > derechos para hacerlo (requisito de los Términos de ElevenLabs).
 
-**Estado**: Gates F1, F2 y F3 aprobados · 101 tests · ruff/mypy limpios ·
+**Estado**: Gates F1, F2 y F3 aprobados · 105 tests · ruff/mypy limpios ·
 **desplegado en Streamlit Community Cloud**. Incluye guardrails éticos y un
 backstop de crisis (ver [Seguridad y ética](#seguridad-y-ética-del-duelo)).
 
@@ -173,7 +173,7 @@ auditoría de la fase F3 (`docs/plannings/planning_03_*`, `docs/validate/AUDIT_0
 ## Calidad y tests
 
 ```bash
-pytest -q --cov                       # 101 tests (los 'integration' se omiten por defecto)
+pytest -q --cov                       # 105 tests (los 'integration' se omiten por defecto)
 ruff check src tests scripts streamlit_app.py
 mypy src
 ```
@@ -208,7 +208,7 @@ mypy src
 | Commits | 17 (9 `feat`, 6 `docs`, 1 `refactor`, 1 `chore`) |
 | Archivos versionados | 78 |
 | Código fuente (`src/`) | 19 módulos · ~951 LOC |
-| Tests | 13 archivos · ~641 LOC · **101 tests** |
+| Tests | 13 archivos · ~641 LOC · **105 tests** |
 | Scripts / Docs | 6 scripts · 30 `.md` |
 | Dependencias runtime | 5 |
 | Gates CDAID aprobados | F1, F2, F3 ✅ |

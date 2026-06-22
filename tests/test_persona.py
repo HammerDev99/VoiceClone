@@ -41,3 +41,27 @@ def test_persona_prohibe_invitacion_a_la_reunion() -> None:
 def test_persona_no_promete_sanacion_completa() -> None:
     prompt = alexander_persona().system_prompt.lower()
     assert "vinculos continuos" in prompt or "vínculos continuos" in prompt
+
+
+def test_persona_tiene_matiz_paisa() -> None:
+    prompt = alexander_persona().system_prompt.lower()
+    assert "paisa" in prompt or "antioqu" in prompt
+
+
+def test_voice_description_menciona_acento_paisa() -> None:
+    desc = voice_description().lower()
+    assert "paisa" in desc or "antioqu" in desc
+
+
+def test_persona_instruye_ortografia_con_enie_y_tildes() -> None:
+    # El prompt debe INSTRUIR explicitamente el espanol correcto: sin esa directiva
+    # Claude tiende a omitir la ñ y las tildes en sus respuestas (y el TTS las
+    # pronuncia mal, p.ej. "ano" por "año").
+    prompt = alexander_persona().system_prompt
+    low = prompt.lower()
+    assert "ñ" in prompt
+    assert "ortografía" in low or "tildes" in low
+
+
+def test_persona_no_usa_mi_amor() -> None:
+    assert "mi amor" not in alexander_persona().system_prompt.lower()

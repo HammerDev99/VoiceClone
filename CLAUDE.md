@@ -113,7 +113,7 @@ consentimiento. Detalle en `agent_docs/project_status.md`.
 | Metrica | Valor |
 |---------|-------|
 | Fase CDAID | Check completado (F1, F2, F3 aprobados) |
-| Tests | 101 (ruff 0, mypy 0) — ver `agent_docs/project_status.md` |
+| Tests | 105 (ruff 0, mypy 0) — ver `agent_docs/project_status.md` |
 | Voz clonada | `VOICE_ID=A1w42DVwDu80oNyR6BeL` (5 muestras) |
 | Preset por defecto | `calido_sereno` (alt: `natural`) |
 | Seguridad | backstop de crisis (`domain/safety.py`, Linea 106) + consentimiento UI |
