@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock
 
+from elevenlabs.core.api_error import ApiError
 from returns.result import Failure, Success
 
 from voiceclone.domain.models import SpeechRequest
@@ -107,3 +108,52 @@ def test_text_to_speech_falla() -> None:
     client = MagicMock()
     client.text_to_speech.convert.side_effect = RuntimeError("boom")
     assert isinstance(el.text_to_speech(client, _request()), Failure)
+
+
+def _api_error(status: str, message: str = "", http_status: int = 401) -> ApiError:
+    """Error del SDK con la forma real que devuelve la API de ElevenLabs."""
+    body = {"detail": {"status": status, "code": status, "message": message}}
+    return ApiError(status_code=http_status, headers={"x-trace-id": "abc"}, body=body)
+
+
+def test_text_to_speech_plan_sin_ivc_explica_el_motivo() -> None:
+    client = MagicMock()
+    client.text_to_speech.convert.side_effect = _api_error(
+        "ivc_not_permitted", "Instantly cloned voices are not available on your current plan."
+    )
+    result = el.text_to_speech(client, _request())
+    assert isinstance(result, Failure)
+    mensaje = result.failure()
+    assert "voces clonadas" in mensaje
+    assert "Starter" in mensaje
+    assert "headers" not in mensaje
+
+
+def test_describe_error_cuota_agotada() -> None:
+    mensaje = el.describe_error(_api_error("quota_exceeded", "This request exceeds your quota"))
+    assert "créditos" in mensaje
+
+
+def test_describe_error_api_key_invalida() -> None:
+    mensaje = el.describe_error(_api_error("invalid_api_key", "Invalid API key"))
+    assert "API key" in mensaje
+
+
+def test_describe_error_generico_usa_mensaje_de_la_api() -> None:
+    mensaje = el.describe_error(_api_error("otro_estado", "Something specific", http_status=500))
+    assert "Something specific" in mensaje
+    assert "HTTP 500" in mensaje
+    assert "headers" not in mensaje
+
+
+def test_describe_error_excepcion_comun() -> None:
+    assert el.describe_error(RuntimeError("boom")) == "boom"
+
+
+def test_get_account_info_api_error_sin_cabeceras() -> None:
+    client = MagicMock()
+    client.user.subscription.get.side_effect = _api_error("invalid_api_key", "Invalid API key")
+    result = el.get_account_info(client)
+    assert isinstance(result, Failure)
+    assert "headers" not in result.failure()
+    assert "API key" in result.failure()

@@ -36,6 +36,12 @@ WhatsApp (ver Roadmap), una vez revisadas sus implicaciones éticas a la luz de 
       (error 400 en cada conversación). `temperature` pasa a ser **opcional**
       (default `None`, no se envía) con **reintento resiliente** si el modelo la
       rechaza. Ver `docs/validate/AUDIT_03_*` (sección Correcciones posteriores).
+- [x] **Mantenimiento 2026-10-10**: incidente "la app responde pero no habla".
+      Causa raíz: plan de ElevenLabs pago por uso sin IVC (`ivc_not_permitted`),
+      no código ni créditos. Se añade `scripts/00_diagnostico.py` (evidencia capa
+      por capa), `elevenlabs_client.describe_error` (errores legibles, sin
+      cabeceras) y el motivo visible en la app. Se elimina `temperature`
+      (`anthropic` 1.x ya no lo acepta; `mypy` volvía a estar limpio).
 - [x] **Analítica web opcional (Umami)** en la app: secreto `ANALYTICS_SCRIPT`
       inyectado en el `<head>` (solo páginas vistas, no contenido). Ver
       `docs/DESPLIEGUE.md` y `.streamlit/secrets.toml.example`.

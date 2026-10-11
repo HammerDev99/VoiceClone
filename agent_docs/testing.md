@@ -18,14 +18,14 @@ pytest -m integration        # SÓLO las pruebas que tocan APIs reales (requiere
 tests/
   conftest.py               fixture make_settings (factory de Settings)
   test_models.py            DTOs: inmutabilidad y propiedades
-  test_settings.py          carga de .env, persistencia de VOICE_ID, temperature opcional
+  test_settings.py          carga de .env, persistencia de VOICE_ID, ANTHROPIC_TEMPERATURE ignorada
   test_persona.py           identidad + guardrails (crisis, prohibición, framing, paisa, ñ)
   test_safety.py            backstop de crisis (detección + CRISIS_RESPONSE, Línea 106)
   test_voice_presets.py     presets de voz (get_preset, rangos, inmutabilidad)
   test_voice_cloning.py     discover_samples + clone_voice (mocks)
   test_speech_synthesis.py  slugify, formato, synthesize, tuning, output_path (mocks + PBT)
-  test_elevenlabs_client.py wrappers del SDK ElevenLabs (mocks)
-  test_anthropic_client.py  wrappers Anthropic: temperature opcional + reintento si la depreca
+  test_elevenlabs_client.py wrappers del SDK ElevenLabs (mocks) + describe_error (ivc/cuota/key)
+  test_anthropic_client.py  wrappers Anthropic: solo parámetros soportados (sin temperature)
   test_conversation.py      generate_reply + corte de camino en crisis (infra mockeada)
   test_streamlit_app.py     smoke + gate de consentimiento + analítica (AppTest, sin red)
 ```

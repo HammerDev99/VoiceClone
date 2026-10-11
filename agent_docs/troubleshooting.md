@@ -62,12 +62,24 @@ presets válidos son `calido_sereno` y `natural` (ver `domain/voice_presets.py`)
 ## Quiero cambiar el preset por defecto
 Edita `VOICE_PRESET` en `.env` (local) o en *Secrets* (nube).
 
-## Error 400: "`temperature` is deprecated for this model"
-El modelo configurado (p.ej. `claude-opus-4-8`) deprecó el parámetro `temperature`.
-La app ya **no lo envía por defecto** (`ANTHROPIC_TEMPERATURE` opcional → `None`).
-Si ves este error: deja `ANTHROPIC_TEMPERATURE` **sin definir** (o comentada) en
-`.env`/*Secrets*. Si la defines a propósito y el modelo la rechaza, el cliente
-reintenta automáticamente sin ella (`anthropic_client.generate_message`).
+## Diagnóstico capa por capa (claves, Claude, voz, TTS)
+`python scripts/00_diagnostico.py` hace una llamada real a Claude, verifica que el
+`VOICE_ID` exista en la cuenta y sintetiza un "Hola" por la misma ruta que la app,
+mostrando el status HTTP y el cuerpo exacto de cada error. Es el primer paso ante
+"la app responde en texto pero no habla" o "no sé qué servicio falla".
+
+## "Tu plan de ElevenLabs no permite usar voces clonadas" (`ivc_not_permitted`)
+La cuenta está activa y puede tener créditos, pero el **tipo de plan** (p.ej. pago
+por uso o Free) no habilita el uso de voces creadas con Instant Voice Cloning. La
+voz sigue en la cuenta; ElevenLabs responde 401 `subscription_required` al
+sintetizar con ella. Solución: plan **Starter o superior**. No es un problema de
+créditos (eso sería `quota_exceeded`) ni de código; no hace falta redesplegar.
+La app muestra este motivo bajo el aviso "(No se pudo generar la voz...)".
+
+## `temperature` ya no existe en el SDK de Anthropic
+`anthropic` 1.x eliminó `temperature`/`top_p`/`top_k` de `messages.create`. La app
+no envía parámetros de muestreo; una variable `ANTHROPIC_TEMPERATURE` heredada se
+ignora. Si un fork antiguo aún la envía, el SDK lanza `TypeError` en el cliente.
 
 ## La analítica (Umami) no registra visitas
 La analítica es opcional y **solo se activa en la nube**. Verifica que el secreto

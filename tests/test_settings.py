@@ -40,43 +40,16 @@ def test_load_settings_exito(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) ->
     assert settings.has_anthropic is False
 
 
-def test_load_settings_temperature_ausente_es_none(
+def test_settings_ignora_anthropic_temperature(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # Sin la variable, no se fuerza temperature: se omite (None). Asi es compatible
-    # con modelos que la deprecaron (p.ej. claude-opus-4-8).
-    for var in ("ELEVENLABS_API_KEY", "ANTHROPIC_TEMPERATURE"):
-        monkeypatch.delenv(var, raising=False)
-    env = _write_env(tmp_path / ".env", "ELEVENLABS_API_KEY=sk_real\n")
-    result = load_settings(env_path=env)
-    assert isinstance(result, Success)
-    assert result.unwrap().anthropic_temperature is None
-
-
-def test_load_settings_temperature_desde_entorno(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
+    # El SDK de Anthropic eliminó 'temperature'; una variable heredada no debe hacer nada.
     monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
     monkeypatch.setenv("ANTHROPIC_TEMPERATURE", "0.7")
     env = _write_env(tmp_path / ".env", "ELEVENLABS_API_KEY=sk_real\n")
     result = load_settings(env_path=env)
     assert isinstance(result, Success)
-    assert result.unwrap().anthropic_temperature == 0.7
-
-
-@pytest.mark.parametrize(
-    ("crudo", "esperado"),
-    [("1.8", 1.0), ("-0.5", 0.0), ("no-es-numero", None), ("", None)],
-)
-def test_load_settings_temperature_se_normaliza(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, crudo: str, esperado: float | None
-) -> None:
-    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
-    monkeypatch.setenv("ANTHROPIC_TEMPERATURE", crudo)
-    env = _write_env(tmp_path / ".env", "ELEVENLABS_API_KEY=sk_real\n")
-    result = load_settings(env_path=env)
-    assert isinstance(result, Success)
-    assert result.unwrap().anthropic_temperature == esperado
+    assert not hasattr(result.unwrap(), "anthropic_temperature")
 
 
 def test_save_voice_id_agrega_cuando_no_existe(tmp_path: Path) -> None:

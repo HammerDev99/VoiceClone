@@ -275,6 +275,7 @@ def main() -> None:
             st.audio(audio_bytes, format="audio/mp3", autoplay=True)
         else:
             st.info("(No se pudo generar la voz en este momento; el mensaje sigue disponible.)")
+            st.caption(f"Motivo: {audio_result.failure()}")
 
     st.session_state.messages.append({"role": "assistant", "content": reply, "audio": audio_bytes})
 

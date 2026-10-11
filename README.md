@@ -163,10 +163,10 @@ auditoría de la fase F3 (`docs/plannings/planning_03_*`, `docs/validate/AUDIT_0
 - **Persona con guardrails**: el system prompt prohíbe invitar al "reencuentro",
   veta la alucinación de recuerdos, valida la emoción antes de aconsejar y no
   trata el duelo como un problema a "resolver".
-- **`ANTHROPIC_TEMPERATURE` opcional**: si el modelo la soporta, una temperatura
-  baja reduce el riesgo de inventar recuerdos. Está **desactivada por defecto**
-  porque los modelos recientes (p.ej. `claude-opus-4-8`) la deprecaron; si se fija
-  y el modelo la rechaza, la app reintenta automáticamente sin ella.
+- **Sin parámetros de muestreo**: el SDK de Anthropic 1.x eliminó `temperature`
+  (y `top_p`/`top_k`), así que la app no los envía; el control de alucinación
+  recae en los guardrails de la persona. Una variable `ANTHROPIC_TEMPERATURE`
+  heredada en `.env`/secrets se ignora.
 - **Transparencia y fricción positiva** (UI): pantalla de consentimiento que
   nombra que es una recreación de IA, y un aviso suave de pausa tras varios turnos.
 

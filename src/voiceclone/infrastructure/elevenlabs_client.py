@@ -12,12 +12,43 @@ from pathlib import Path
 
 from elevenlabs import VoiceSettings
 from elevenlabs.client import ElevenLabs
+from elevenlabs.core.api_error import ApiError
 from returns.result import Failure, Result, Success
 
 from voiceclone.domain.models import AccountInfo, ClonedVoice, SpeechRequest
 from voiceclone.infrastructure.logging import get_logger
 
 logger = get_logger(__name__)
+
+# Estados de error de la API de ElevenLabs que merecen una explicacion en espanol.
+# El SDK incluye las cabeceras HTTP en str(ApiError); aqui se traduce lo relevante.
+_ERROR_HINTS: dict[str, str] = {
+    "ivc_not_permitted": (
+        "Tu plan de ElevenLabs no permite usar voces clonadas (Instant Voice Cloning). "
+        "Requiere plan Starter o superior; la voz sigue en la cuenta, pero no se puede "
+        "sintetizar con ella."
+    ),
+    "quota_exceeded": "Se agotaron los créditos (caracteres) de tu cuenta de ElevenLabs.",
+    "invalid_api_key": "La API key de ElevenLabs no es válida o fue revocada.",
+}
+
+
+def describe_error(exc: BaseException) -> str:
+    """Resume un error del SDK en una frase util, sin volcar cabeceras HTTP."""
+    if not isinstance(exc, ApiError):
+        return str(exc)
+    body = exc.body if isinstance(exc.body, dict) else {}
+    detail = body.get("detail")
+    if isinstance(detail, dict):
+        status = str(detail.get("status") or detail.get("code") or "")
+        message = str(detail.get("message") or detail)
+    else:
+        status = ""
+        message = str(detail or body or exc)
+    hint = _ERROR_HINTS.get(status)
+    if hint:
+        return f"{hint} (HTTP {exc.status_code}, {status})"
+    return f"HTTP {exc.status_code}: {message}"
 
 
 def build_client(api_key: str) -> Result[ElevenLabs, str]:
@@ -45,7 +76,7 @@ def get_account_info(client: ElevenLabs) -> Result[AccountInfo, str]:
         )
     except Exception as exc:  # boundary con SDK externo
         logger.error("No se pudo obtener la informacion de la cuenta", exc_info=True)
-        return Failure(f"Error consultando la cuenta de ElevenLabs: {exc}")
+        return Failure(f"Error consultando la cuenta de ElevenLabs: {describe_error(exc)}")
 
 
 def list_voices(client: ElevenLabs) -> Result[list[ClonedVoice], str]:
@@ -56,7 +87,7 @@ def list_voices(client: ElevenLabs) -> Result[list[ClonedVoice], str]:
         return Success(voices)
     except Exception as exc:  # boundary con SDK externo
         logger.error("No se pudieron listar las voces", exc_info=True)
-        return Failure(f"Error listando voces: {exc}")
+        return Failure(f"Error listando voces: {describe_error(exc)}")
 
 
 def create_instant_voice(
@@ -91,7 +122,7 @@ def create_instant_voice(
         return Success(ClonedVoice(voice_id=voice_id, name=name))
     except Exception as exc:  # boundary con SDK externo
         logger.error("Fallo el clonado IVC", exc_info=True)
-        return Failure(f"Error en el clonado IVC: {exc}")
+        return Failure(f"Error en el clonado IVC: {describe_error(exc)}")
     finally:
         for handle in handles:
             handle.close()
@@ -130,4 +161,4 @@ def text_to_speech(client: ElevenLabs, request: SpeechRequest) -> Result[bytes, 
         return Success(audio_bytes)
     except Exception as exc:  # boundary con SDK externo
         logger.error("Fallo la sintesis de voz (TTS)", exc_info=True)
-        return Failure(f"Error en la sintesis de voz: {exc}")
+        return Failure(f"Error en la sintesis de voz: {describe_error(exc)}")
