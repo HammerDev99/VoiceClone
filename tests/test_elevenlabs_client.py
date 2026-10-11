@@ -157,3 +157,23 @@ def test_get_account_info_api_error_sin_cabeceras() -> None:
     assert isinstance(result, Failure)
     assert "headers" not in result.failure()
     assert "API key" in result.failure()
+
+
+class _ErrorSinHerencia(Exception):
+    """Error con la forma de ApiError pero sin heredar de la clase del SDK.
+
+    Ocurre cuando el entorno tiene otra version del SDK o modulos cargados
+    dos veces: ``isinstance`` falla aunque el objeto tenga status_code y body.
+    """
+
+    def __init__(self, status_code: int, body: object) -> None:
+        super().__init__(f"headers: {{}}, status_code: {status_code}, body: {body}")
+        self.status_code = status_code
+        self.body = body
+
+
+def test_describe_error_reconoce_errores_por_forma_no_por_clase() -> None:
+    exc = _ErrorSinHerencia(401, {"detail": {"status": "ivc_not_permitted", "message": "x"}})
+    mensaje = el.describe_error(exc)
+    assert "voces clonadas" in mensaje
+    assert "headers" not in mensaje

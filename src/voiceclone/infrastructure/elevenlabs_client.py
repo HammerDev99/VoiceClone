@@ -34,10 +34,17 @@ _ERROR_HINTS: dict[str, str] = {
 
 
 def describe_error(exc: BaseException) -> str:
-    """Resume un error del SDK en una frase util, sin volcar cabeceras HTTP."""
-    if not isinstance(exc, ApiError):
+    """Resume un error del SDK en una frase util, sin volcar cabeceras HTTP.
+
+    Reconoce el error por su forma (``status_code`` y ``body``), no solo por la
+    clase ``ApiError``: asi funciona aunque el entorno cargue otra version del
+    SDK o el modulo este duplicado en memoria.
+    """
+    raw_body = getattr(exc, "body", None)
+    status_code = getattr(exc, "status_code", None)
+    if not isinstance(exc, ApiError) and raw_body is None and status_code is None:
         return str(exc)
-    body = exc.body if isinstance(exc.body, dict) else {}
+    body = raw_body if isinstance(raw_body, dict) else {}
     detail = body.get("detail")
     if isinstance(detail, dict):
         status = str(detail.get("status") or detail.get("code") or "")
@@ -47,8 +54,8 @@ def describe_error(exc: BaseException) -> str:
         message = str(detail or body or exc)
     hint = _ERROR_HINTS.get(status)
     if hint:
-        return f"{hint} (HTTP {exc.status_code}, {status})"
-    return f"HTTP {exc.status_code}: {message}"
+        return f"{hint} (HTTP {status_code}, {status})"
+    return f"HTTP {status_code}: {message}"
 
 
 def build_client(api_key: str) -> Result[ElevenLabs, str]:

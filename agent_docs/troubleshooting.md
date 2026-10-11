@@ -76,6 +76,13 @@ sintetizar con ella. Solución: plan **Starter o superior**. No es un problema d
 créditos (eso sería `quota_exceeded`) ni de código; no hace falta redesplegar.
 La app muestra este motivo bajo el aviso "(No se pudo generar la voz...)".
 
+## Tras un push, la app en la nube muestra mensajes o comportamientos antiguos
+Streamlit Cloud puede recargar `streamlit_app.py` sin reiniciar el proceso, con lo
+que los módulos de `src/` ya importados siguen en memoria (p.ej. un error que
+debería salir traducido aparece con el volcado de cabeceras). Solución: *Manage
+app → Reboot app*. Un cambio en `requirements.txt` también fuerza la reconstrucción
+completa del entorno.
+
 ## `temperature` ya no existe en el SDK de Anthropic
 `anthropic` 1.x eliminó `temperature`/`top_p`/`top_k` de `messages.create`. La app
 no envía parámetros de muestreo; una variable `ANTHROPIC_TEMPERATURE` heredada se

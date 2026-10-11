@@ -1,8 +1,8 @@
 # Dependencias de ejecucion (runtime)
 # Instalar con:  pip install -r requirements.txt
 
-elevenlabs>=1.50.0      # SDK oficial de ElevenLabs (clonado IVC + TTS)
-anthropic>=0.40.0       # SDK de Claude para la capa conversacional (persona)
+elevenlabs>=2.53.0,<3   # SDK oficial de ElevenLabs (clonado IVC + TTS); mayor fijada
+anthropic>=1.0.0,<2     # SDK de Claude (1.x: sin temperature, httpx2); mayor fijada
 python-dotenv>=1.0.1    # Carga de variables desde .env
 returns>=0.23.0         # Result[T, E] (Success/Failure) - manejo de errores
 streamlit>=1.40.0       # Interfaz web para la familia (chat + audio)
