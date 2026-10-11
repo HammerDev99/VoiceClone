@@ -12,6 +12,7 @@ Lee las claves de .env (local) o de las variables de entorno. Nunca imprime clav
 
 from __future__ import annotations
 
+import logging
 import sys
 import time
 from pathlib import Path
@@ -175,8 +176,15 @@ def _check_elevenlabs(s: Settings) -> bool:
     return ok
 
 
+def _silenciar_logs() -> None:
+    """Solo se muestran las lineas de resultado; los errores ya se explican en cada paso."""
+    for name in ("voiceclone", "httpx", "httpx2", "anthropic", "elevenlabs"):
+        logging.getLogger(name).setLevel(logging.CRITICAL)
+
+
 def main() -> int:
     print("== Diagnostico VoiceClone ==")
+    _silenciar_logs()
     if not _print_versions():
         return 1
     settings_result = load_settings()
